@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Security Review: {{target}}</title>
+<!--
+  HTML report template for the OWASP Security Advisor.
+  Rendered by bin/render-report.js from <findings-root>/summary.json.
+
+  Token syntax:
+    {{name}}                       simple substitution, HTML-escaped
+    BEGIN:block / END:block        HTML comments marking a repeated block
+
+  Self-contained by design: no external stylesheet, no font, no script, no
+  network request of any kind. A security report must not phone home, and it
+  must render from a file:// URL on a disconnected machine.
+
+  Rule 7 applies. No em dashes, no en dashes, no U+2015, no U+2212.
+-->
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #16181d;
+    --muted: #5c6370;
+    --line: #e2e5ea;
+    --panel: #f7f8fa;
+    --crit: #b3001b;
+    --high: #c2410c;
+    --med: #a16207;
+    --low: #0369a1;
+    --info: #4b5563;
+    --ok: #15803d;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14161a;
+      --fg: #e8eaed;
+      --muted: #9aa1ac;
+      --line: #2b2f36;
+      --panel: #1b1e24;
+      --crit: #ff6b6b;
+      --high: #ff9f5a;
+      --med: #e8c05a;
+      --low: #5fb3e8;
+      --info: #9aa1ac;
+      --ok: #5fd68a;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 2rem 1.25rem 4rem;
+    background: var(--bg);
+    color: var(--fg);
+    font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  main { max-width: 60rem; margin: 0 auto; }
+  h1 { font-size: 1.9rem; margin: 0 0 1.5rem; letter-spacing: -0.02em; }
+  h2 {
+    font-size: 1.3rem;
+    margin: 2.75rem 0 1rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--line);
+  }
+  h3 { font-size: 1.05rem; margin: 2rem 0 0.6rem; }
+  p { margin: 0 0 1rem; }
+  a { color: inherit; }
+  code {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.875em;
+    background: var(--panel);
+    padding: 0.1em 0.35em;
+    border-radius: 3px;
+  }
+  .grade-card {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .grade {
+    font-size: 4rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    min-width: 4.5rem;
+    text-align: center;
+  }
+  .grade-A { color: var(--ok); }
+  .grade-B { color: var(--low); }
+  .grade-C { color: var(--med); }
+  .grade-D { color: var(--high); }
+  .grade-F { color: var(--crit); }
+  .grade-meta { flex: 1 1 18rem; }
+  .score { font-size: 1.5rem; font-weight: 600; }
+  .reading { color: var(--muted); margin: 0.35rem 0 0; }
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+    gap: 0.75rem;
+    margin: 1.25rem 0;
+  }
+  .tile {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 0.85rem;
+    background: var(--panel);
+  }
+  .tile .n { font-size: 1.75rem; font-weight: 700; line-height: 1.1; }
+  .tile .k {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-top: 0.2rem;
+  }
+  .n-crit { color: var(--crit); }
+  .n-high { color: var(--high); }
+  .n-med  { color: var(--med); }
+  .n-low  { color: var(--low); }
+  .n-info { color: var(--info); }
+  .warn {
+    border-left: 3px solid var(--high);
+    background: var(--panel);
+    padding: 0.85rem 1rem;
+    border-radius: 0 6px 6px 0;
+    margin: 1rem 0;
+  }
+  .warn:empty { display: none; }
+  .table-wrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; margin: 0 0 1rem; }
+  th, td {
+    text-align: left;
+    padding: 0.5rem 0.7rem;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  th { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+  .finding {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 1.1rem 1.25rem;
+    margin: 0 0 1rem;
+  }
+  .finding h3 { margin-top: 0; }
+  .pill {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid currentColor;
+    margin-right: 0.4rem;
+  }
+  .kv { color: var(--muted); font-size: 0.9rem; }
+  footer {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Security Review: {{target}}</h1>
+
+<div class="grade-card">
+  <div class="grade grade-{{grade}}">{{grade}}</div>
+  <div class="grade-meta">
+    <div class="score">{{score}} / 100</div>
+    <p class="reading">{{gradeReading}}</p>
+  </div>
+</div>
+
+<div class="table-wrap">
+<table>
+  <tr><th>Reviewed</th><td>{{reviewedAt}}</td></tr>
+  <tr><th>Reviewer</th><td>{{reviewer}}</td></tr>
+  <tr><th>Commit</th><td><code>{{commit}}</code></td></tr>
+  <tr><th>Mode</th><td>{{mode}}</td></tr>
+  <tr><th>ASVS level</th><td>{{asvsLevel}}</td></tr>
+</table>
+</div>
+
+<h2>Dashboard</h2>
+
+<div class="tiles">
+  <div class="tile"><div class="n n-crit">{{criticalCount}}</div><div class="k">Critical</div></div>
+  <div class="tile"><div class="n n-high">{{highCount}}</div><div class="k">High</div></div>
+  <div class="tile"><div class="n n-med">{{mediumCount}}</div><div class="k">Medium</div></div>
+  <div class="tile"><div class="n n-low">{{lowCount}}</div><div class="k">Low</div></div>
+  <div class="tile"><div class="n n-info">{{infoCount}}</div><div class="k">Info</div></div>
+</div>
+
+<p class="kv">
+  Computed from verified findings only, per <code>rubrics/scoring.md</code>
+  section 3. Info findings and unverified findings do not subtract from the
+  score. They are not silently priced in.
+</p>
+
+<h3>Coverage</h3>
+
+<div class="tiles">
+  <div class="tile"><div class="n">{{coveragePct}}%</div><div class="k">Coverage</div></div>
+  <div class="tile"><div class="n">{{entryPointsTraced}}</div><div class="k">Traced</div></div>
+  <div class="tile"><div class="n">{{entryPointsEnumerated}}</div><div class="k">Enumerated</div></div>
+  <div class="tile"><div class="n">{{unverifiedCount}}</div><div class="k">Unverified</div></div>
+</div>
+
+<div class="warn">{{coverageWarningHtml}}</div>
+
+<p>
+  Read the grade and the coverage together or not at all. A high score at low
+  coverage is an unfinished review, not a clean bill of health.
+</p>
+
+<h2>Fix this first</h2>
+
+<p>{{topPriority}}</p>
+
+<h2>Scope</h2>
+
+<h3>In scope</h3>
+{{scopeIncludedHtml}}
+
+<h3>Out of scope</h3>
+{{scopeExcludedHtml}}
+
+<h3>Not reviewed, and why</h3>
+{{areasNotReviewedHtml}}
+
+<h2>Findings</h2>
+
+<!-- BEGIN:findings -->
+<div class="finding">
+  <h3><span class="pill n-{{sevClass}}">{{severity}}</span>{{id}}: {{title}}</h3>
+  <p>{{summary}}</p>
+  <div class="table-wrap">
+  <table>
+    <tr><th>Impact</th><td>{{impact}}</td><th>Reachability</th><td>{{reachability}}</td></tr>
+    <tr><th>Verified</th><td>{{verified}}</td><th>Confidence</th><td>{{confidence}}</td></tr>
+    <tr><th>Status</th><td>{{status}}</td><th>Component</th><td>{{component}}</td></tr>
+    <tr><th>OWASP</th><td>{{owasp}}</td><th>CWE</th><td>{{cwe}}</td></tr>
+    <tr><th>Entry point</th><td colspan="3"><code>{{entryPoint}}</code></td></tr>
+    <tr><th>Sink</th><td colspan="3"><code>{{sink}}</code></td></tr>
+    <tr><th>Control</th><td colspan="3">{{control}}</td></tr>
+  </table>
+  </div>
+  <p><a href="{{file}}">Full detail: {{file}}</a></p>
+</div>
+<!-- END:findings -->
+
+<p>{{noFindingsNote}}</p>
+
+<h2>Unverified</h2>
+
+<p>
+  These were found but could not be verified by code read alone. Under Rule 2
+  they are held at Info, and that is the correct outcome, not a failure of the
+  review. Each names what would settle it. See
+  <a href="unverified.md">unverified.md</a>.
+</p>
+
+<h2>What this report is not</h2>
+
+<p>
+  This was a read-only static review. It did not execute {{target}}, send it
+  traffic, or attempt exploitation. It is not a penetration test. ASVS
+  alignment is not ASVS certification. It is not a substitute for a human
+  reviewer on anything that matters.
+</p>
+
+<p>
+  Findings marked verified were traced end to end from entry point to sink,
+  with every intermediate control read. Findings not so traced are at Info and
+  marked unverified. The absence of a finding in an area is evidence only to
+  the extent that the area was covered; see the coverage figures above and the
+  not-reviewed list.
+</p>
+
+<footer>
+  Generated by
+  <a href="https://github.com/TheDigitalEmu/owasp-security-advisor">OWASP Security Advisor</a>
+  v{{version}}.
+</footer>
+
+</main>
+</body>
+</html>

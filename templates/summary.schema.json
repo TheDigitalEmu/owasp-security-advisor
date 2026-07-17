@@ -1,0 +1,170 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/TheDigitalEmu/owasp-security-advisor/templates/summary.schema.json",
+  "title": "OWASP Security Advisor review summary",
+  "description": "Machine-readable output of a review. Written to <findings-root>/summary.json. The score block is computed by bin/render-report.js from the findings array and must not be hand-authored; rubrics/scoring.md is the authoritative model.",
+  "type": "object",
+  "required": ["schemaVersion", "engagement", "coverage", "findings"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "engagement": {
+      "type": "object",
+      "required": ["target", "reviewedAt", "mode", "scope"],
+      "additionalProperties": false,
+      "properties": {
+        "target": {
+          "type": "string",
+          "description": "Name of the reviewed target. Use a placeholder such as <target-repo> if the report will be shared."
+        },
+        "reviewedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "reviewer": {
+          "type": "string",
+          "description": "Who or what ran the review. Name the agent and model if applicable."
+        },
+        "commit": {
+          "type": "string",
+          "description": "Commit SHA of the reviewed tree. Without this the report is not reproducible."
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["review", "build"]
+        },
+        "scope": {
+          "type": "object",
+          "required": ["included", "excluded"],
+          "additionalProperties": false,
+          "properties": {
+            "included": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "excluded": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Vendored code, generated code, third-party bundles, anything deliberately not looked at."
+            }
+          }
+        },
+        "asvsLevel": {
+          "type": "string",
+          "enum": ["L1", "L2", "L3"],
+          "description": "The ASVS level the review was assessed against. See doctrine/02-asvs-checklist.md."
+        }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "description": "Reported alongside the score and never folded into it. See rubrics/scoring.md section 4.",
+      "required": ["entryPointsEnumerated", "entryPointsTraced"],
+      "additionalProperties": false,
+      "properties": {
+        "entryPointsEnumerated": { "type": "integer", "minimum": 0 },
+        "entryPointsTraced": { "type": "integer", "minimum": 0 },
+        "doctrinePassesApplicable": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "doctrinePassesCompleted": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "areasNotReviewed": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Named honestly. The boundary of the review is part of the review."
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/finding" }
+    },
+    "score": {
+      "type": "object",
+      "description": "Computed by bin/render-report.js. Present in rendered output; do not author by hand.",
+      "additionalProperties": true
+    }
+  },
+  "definitions": {
+    "finding": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "severity",
+        "verified",
+        "confidence",
+        "impact",
+        "reachability",
+        "status"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^F-[0-9]{3}$",
+          "description": "Stable identity. A zero-padded sequence assigned in discovery order and never reused. Severity is deliberately NOT part of the ID: severity is expected to move during the verification pass, and an ID that moved with it would break every reference at the moment the rubric corrected the reviewer. The filename carries the severity; the ID does not. See doctrine/07-findings-template.md."
+        },
+        "title": {
+          "type": "string",
+          "description": "States the defect, not the category."
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["Critical", "High", "Medium", "Low", "Info"],
+          "description": "Must equal the matrix result after the verification ceiling is applied. render-report.js recomputes and will warn on mismatch."
+        },
+        "verified": {
+          "type": "boolean",
+          "description": "False caps severity at Info. See rubrics/scoring.md section 2."
+        },
+        "confidence": {
+          "type": "string",
+          "enum": ["high", "medium", "low"]
+        },
+        "impact": {
+          "type": "string",
+          "enum": ["Catastrophic", "Severe", "Moderate", "Minor"]
+        },
+        "reachability": {
+          "type": "string",
+          "enum": ["Open", "Authenticated", "Constrained", "Theoretical"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["open", "accepted-risk", "fixed", "wont-fix", "duplicate"]
+        },
+        "acceptedBy": {
+          "type": "string",
+          "description": "Required in practice when status is accepted-risk. Acceptance is a decision about the defect, not a property of it; severity does not move."
+        },
+        "acceptedAt": { "type": "string", "format": "date-time" },
+        "component": { "type": "string" },
+        "owasp": { "type": "array", "items": { "type": "string" } },
+        "asvs": { "type": "array", "items": { "type": "string" } },
+        "cwe": { "type": "array", "items": { "type": "string" } },
+        "summary": { "type": "string" },
+        "file": {
+          "type": "string",
+          "description": "Path to the per-finding Markdown file, relative to the findings root."
+        },
+        "location": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entryPoint": { "type": "string" },
+            "sink": { "type": "string" },
+            "control": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "name": "owasp-security-advisor",
+  "version": "1.0.0",
+  "description": "OWASP-aligned security review protocol for AI coding agents and human reviewers. Produces a deterministic scored report. Read-only on application code in review mode.",
+  "license": "MIT",
+  "author": "Digital Emu",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TheDigitalEmu/owasp-security-advisor.git"
+  },
+  "homepage": "https://github.com/TheDigitalEmu/owasp-security-advisor#readme",
+  "bugs": {
+    "url": "https://github.com/TheDigitalEmu/owasp-security-advisor/issues"
+  },
+  "keywords": [
+    "owasp",
+    "asvs",
+    "security-review",
+    "threat-model",
+    "secure-code-review",
+    "claude-skill",
+    "agent-skill"
+  ],
+  "bin": {
+    "owasp-reachability": "bin/reachability.js",
+    "owasp-render-report": "bin/render-report.js",
+    "owasp-deployment-report": "bin/deployment-report.js"
+  },
+  "scripts": {
+    "reachability": "node bin/reachability.js",
+    "render": "node bin/render-report.js",
+    "deployment": "node bin/deployment-report.js"
+  },
+  "files": [
+    "SKILL.md",
+    "SYSTEM_PROMPT.md",
+    "BOOTSTRAP.md",
+    "HUMAN_GUIDE.md",
+    "doctrine/",
+    "rubrics/",
+    "templates/",
+    "bin/"
+  ],
+  "dependencies": {}
+}

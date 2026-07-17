@@ -1,0 +1,22 @@
+# Review output. Never commit findings from a real engagement to this repo.
+findings/
+sweeps/
+*.local.md
+*.local.json
+
+# Node
+node_modules/
+npm-debug.log*
+.npm/
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Secrets. Belt and braces: this repo should never hold any.
+.env
+.env.*
+*.pem
+*.key
