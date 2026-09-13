@@ -24,7 +24,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 'node:fs';
 import { join, resolve, dirname } from 'node:path';
 
-const VERSION = '1.1.1';
+const VERSION = '1.2.0';
 
 const HELP = `
 reachability.js -- record and check an entry-point-to-sink trace

@@ -14,23 +14,39 @@ the same number. Severity is not a feeling about how interesting the bug is.
 Score each axis independently, then read the severity off the matrix. Do not
 pick a severity first and reason backwards to the axes.
 
+Every axis value above the floor must be earned with a citation, not asserted.
+The reviewer records that citation in the Axis justification block of
+`doctrine/07-findings-template.md`. A level whose admitting fact you cannot cite
+is not your level: drop to the one you can cite. This citation rule is what makes
+two runs of the same review agree, and its absence is why they do not: a value
+picked by judgment drifts, a value pinned to a file:line does not.
+
 ### Impact
 
-| Level | Value | Means |
-|---|---|---|
-| Catastrophic | 4 | Full compromise, arbitrary code execution, mass data loss or exfiltration, authentication bypass for any account |
-| Severe | 3 | Access to or modification of data belonging to other users, privilege escalation, persistent compromise of one account |
-| Moderate | 2 | Disclosure of non-public data of limited scope, integrity loss the user can detect and undo, denial of service against one tenant |
-| Minor | 1 | Information disclosure with no direct use, defence-in-depth gap, hardening opportunity |
+The floor is Minor. Minor needs no positive evidence. **Moderate and above
+require a citation naming the specific data or effect at stake.** "Non-public
+data" you did not identify is Minor until you name it.
+
+| Level | Value | Means | To claim it |
+|---|---|---|---|
+| Catastrophic | 4 | Full compromise, arbitrary code execution, mass data loss or exfiltration, authentication bypass for any account | Cite the sink and the scope of what it exposes |
+| Severe | 3 | Access to or modification of data belonging to other users, privilege escalation, persistent compromise of one account | Cite the cross-user data or the escalation path |
+| Moderate | 2 | Disclosure of non-public data of limited scope, integrity loss the user can detect and undo, denial of service against one tenant | Name the specific data class and cite where it is read |
+| Minor | 1 | Information disclosure with no direct use, defence-in-depth gap, hardening opportunity | Floor. No positive citation required |
 
 ### Reachability
 
-| Level | Value | Means |
-|---|---|---|
-| Open | 4 | Unauthenticated, remote, no preconditions |
-| Authenticated | 3 | Any authenticated user, no special role, no unusual preconditions |
-| Constrained | 2 | Requires a privileged role, a race, a specific configuration, or a non-default state you confirmed exists |
-| Theoretical | 1 | Requires local access, an already-compromised component, or a precondition you could not confirm |
+The floor is Theoretical. **Constrained and above require a positive citation of
+a confirmed fact.** A precondition you assume, a config you did not read, a role
+you did not find assigned: none admit the level. Absent the citation, the value
+is Theoretical.
+
+| Level | Value | Means | To claim it |
+|---|---|---|---|
+| Open | 4 | Unauthenticated, remote, no preconditions | Cite the entry point and the read of every middleware on the path confirming none require identity |
+| Authenticated | 3 | Any authenticated user, no special role, no unusual preconditions | Cite the auth check, and confirm no further precondition |
+| Constrained | 2 | Requires a privileged role, a race, a specific configuration, or a non-default state **you confirmed exists, with a citation** | Cite the role assigned, the config value set, or the state observed |
+| Theoretical | 1 | Requires local access, an already-compromised component, or a precondition you could not confirm | Floor. This is where an unconfirmed precondition lands |
 
 ### Matrix
 
@@ -169,6 +185,38 @@ is private. Impact Catastrophic (4), Reachability Open (4): private repos get
 cloned to laptops and forked, and the credential is valid now. Matrix:
 **Critical**. Grade caps at F. Remediation is rotation, not deletion of the
 commit.
+
+---
+
+## 5a. Reproducibility, and its honest limit
+
+The same repository at the same commit should score the same on two runs. The
+math already guarantees this: `bin/render-report.js` is a pure function of the
+axis values and the finding set. So run-to-run variance can enter in only two
+places, and this section says what pins each and what does not.
+
+**Axis variance.** Two runs that both found a finding must give it the same
+impact and reachability. The citation rule above is the pin: a value is admitted
+only by a cited fact, so two honest reviewers either cite the same fact and agree,
+or cite different facts and can be shown exactly where they diverged. This
+removes the drift that comes from picking a level by feel. It does not remove
+the judgment of whether a cited line actually says what the reviewer claims: that
+residue is real and it is the base rate of misreading code. It is bounded,
+because the citation is checkable by anyone.
+
+**Enumeration variance.** Two runs may discover different findings. A finding
+never written has no axis to pin. This is the larger residue, and the defence is
+coverage: every enumerated entry point and sink gets a recorded verdict (see
+`doctrine/06-investigation-playbook.md`), so a missed area shows up as a gap that
+debits coverage rather than as a silently smaller, better-looking score. A run
+that looked at less says so in the coverage figure next to the grade.
+
+**What this does not claim.** It does not claim bit-for-bit determinism. It
+claims that axis drift is pinned to citations, that missed coverage is visible
+rather than silent, and that any two diverging runs can be reconciled by
+comparing their cited facts. A grade handed over without its coverage figure, or
+a finding rated above the floor without its Axis justification block filled, is
+not a reproducible result and must not be presented as one.
 
 ---
 

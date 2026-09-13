@@ -4,6 +4,28 @@ All notable changes to this project are documented here.
 
 Format based on Keep a Changelog. This project adheres to Semantic Versioning.
 
+## [1.2.0] - 2026-09-13
+
+### Changed
+
+- Reproducibility. Three runs of the same repo at the same commit produced
+  different grades (a HIGH finding, an A, and a B) because the reviewer assigned
+  impact and reachability by judgment, and one run silently missed findings.
+  Two changes pin this:
+  - Axis values must now be earned with a citation, not asserted. The impact and
+    reachability tables in `rubrics/scoring.md` state, per level, the fact that
+    admits it, and a new Axis justification block in
+    `doctrine/07-findings-template.md` forces the reviewer to cite the file:line
+    that satisfies the level or drop to the floor. Constrained reachability and
+    Moderate impact and above require a positive citation of a confirmed fact.
+  - Coverage is now a recorded verdict per enumerated element. Phase 6 of
+    `doctrine/06-investigation-playbook.md` requires clear / finding / gap on
+    every entry point and sink, so a silently skipped area becomes a coverage
+    debit rather than an invisible omission.
+- `rubrics/scoring.md` gains a Reproducibility section stating honestly what is
+  pinned (axis drift, missed coverage) and the residue that remains (a cited
+  line still has to be read correctly; discovery is still an LLM).
+
 ## [1.1.1] - 2026-09-13
 
 ### Fixed

@@ -169,6 +169,26 @@ Then record what you did **not** cover: files skipped, paths not traced,
 questions left open. Put it in `<findings-root>/unverified.md`. The boundary of
 the review is part of the review.
 
+### Record a verdict on every enumerated element
+
+This is what stops two runs from silently finding different things. Phase 2
+produced a set of entry points and Phase 3 a set of sinks. Before you converge,
+**every element of both sets carries one recorded verdict**, and there is no
+blank state:
+
+| Verdict | Meaning | Where it goes |
+|---|---|---|
+| clear | Traced, no defect on the path (cite the control that stops it) | inventory, one line |
+| finding | Defect found, written up per `doctrine/07-findings-template.md` | `findings/` |
+| gap | Not traced, or could not be settled from the code | `unverified.md`, and it debits coverage |
+
+A silently skipped element is the failure this prevents. If the CSP header, the
+dependency audit, or an entry point never got looked at, it is a `gap`, not an
+absence from the report. `coverage.entryPointsEnumerated` and `entryPointsTraced`
+in `summary.json` are counted from these verdicts, not estimated, so a run that
+looked at less produces a lower coverage figure next to its grade rather than a
+smaller, cleaner-looking finding set. See `rubrics/scoring.md` section 5a.
+
 ---
 
 ## Search technique

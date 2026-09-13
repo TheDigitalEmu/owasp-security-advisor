@@ -1,6 +1,6 @@
 ---
 name: owasp-advisor
-version: 1.1.1
+version: 1.2.0
 description: OWASP-aligned security review of a file, folder, or repository. Use when the user asks for a security review, security sweep, security audit, OWASP review, vulnerability scan, threat model, secure code review, or asks how secure their code is, or whether something is ready to deploy from a security perspective. Also provides a build mode for security-logged remediation work, and a self-update protocol for the skill itself. Produces a deterministic scored report with a dashboard (HTML and Markdown), per-finding files, and a machine-readable summary. Read-only on application code in review mode; never edits source. Aligned to OWASP ASVS 5.0, Top 10 (2025), API Security Top 10 (2023), Proactive Controls 2024, and the Cheat Sheet Series.
 license: MIT
 ---

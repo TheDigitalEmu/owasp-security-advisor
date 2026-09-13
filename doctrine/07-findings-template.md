@@ -108,6 +108,29 @@ a generic severity narrative.
 | Preconditions | <what must be true> |
 | Reachable in the deployed configuration | yes / no / unverified, and how you know |
 
+## Axis justification
+
+This block is what makes the score reproducible. You do not get to name an axis
+value. You earn it by citing the fact that admits it. Fill both rows. If you
+cannot cite the fact a level requires, you are not at that level: drop to the
+level you can cite. This is where two runs of the same review converge or expose
+exactly which citation they read differently.
+
+Quote the rubric requirement for the level you claim (from `rubrics/scoring.md`
+section 1), then cite the file:line that satisfies it.
+
+| Axis | Level claimed | Rubric requirement for that level | Citation that satisfies it (`file:line`) |
+|---|---|---|---|
+| Impact | <level> | <paste the rubric wording> | <file:line, or "n/a, level needs no positive evidence"> |
+| Reachability | <level> | <paste the rubric wording> | <file:line> |
+
+The load-bearing rule: **`Constrained` and above on Reachability, and `Moderate`
+and above on Impact, require a positive citation of a confirmed fact.** A
+precondition you assume, a config you did not read, a role you did not find
+assigned: none of these admit the level. Absent the citation, Reachability is
+`Theoretical` and Impact is `Minor`. Worked example C in `rubrics/scoring.md` is
+this rule in action.
+
 ## Verification
 
 State plainly what you did. Rule 2 lives or dies here.
