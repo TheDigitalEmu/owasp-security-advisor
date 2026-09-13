@@ -7,17 +7,15 @@
     "commit": "0000000000000000000000000000000000000000",
     "mode": "review",
     "scope": {
-      "included": ["src/"],
-      "excluded": ["vendor/", "generated/"]
+      "included": [
+        "src/"
+      ],
+      "excluded": [
+        "vendor/",
+        "generated/"
+      ]
     },
     "asvsLevel": "L2"
-  },
-  "coverage": {
-    "entryPointsEnumerated": 10,
-    "entryPointsTraced": 8,
-    "doctrinePassesApplicable": ["13", "15", "04", "03", "02"],
-    "doctrinePassesCompleted": ["13", "15", "04", "03", "02"],
-    "areasNotReviewed": ["the payment webhook handler, no test environment available"]
   },
   "findings": [
     {
@@ -30,9 +28,15 @@
       "reachability": "Open",
       "status": "open",
       "component": "<backend>/search",
-      "owasp": ["A05:2025 Injection"],
-      "asvs": ["V5.3"],
-      "cwe": ["CWE-89"],
+      "owasp": [
+        "A05:2025 Injection"
+      ],
+      "asvs": [
+        "V5.3"
+      ],
+      "cwe": [
+        "CWE-89"
+      ],
       "summary": "An unauthenticated request reaches a concatenated SQL string with no binding.",
       "file": "findings/CRITICAL-001-sql-injection-search.md",
       "location": {
@@ -51,9 +55,15 @@
       "reachability": "Authenticated",
       "status": "open",
       "component": "<backend>/auth/reset",
-      "owasp": ["A07:2025 Authentication Failures"],
-      "asvs": ["V2.5"],
-      "cwe": ["CWE-640"],
+      "owasp": [
+        "A07:2025 Authentication Failures"
+      ],
+      "asvs": [
+        "V2.5"
+      ],
+      "cwe": [
+        "CWE-640"
+      ],
       "summary": "A reset token remains valid indefinitely once issued.",
       "file": "findings/MEDIUM-002-reset-token-no-expiry.md",
       "location": {
@@ -62,5 +72,46 @@
         "control": "single-use flag present, expiry absent"
       }
     }
-  ]
+  ],
+  "enumeration": {
+    "generatedBy": "enumerate.js 1.4.0",
+    "profile": "generic",
+    "elements": [
+      {
+        "id": "entry:route:src/search",
+        "kind": "entryPoint",
+        "name": "Search handler",
+        "verdict": "finding",
+        "evidence": "F-001"
+      },
+      {
+        "id": "entry:route:src/auth/reset",
+        "kind": "entryPoint",
+        "name": "Password reset",
+        "verdict": "finding",
+        "evidence": "F-002"
+      },
+      {
+        "id": "sink:query-execution",
+        "kind": "sinkClass",
+        "name": "Query execution",
+        "verdict": "finding",
+        "evidence": "F-001"
+      },
+      {
+        "id": "sink:authorisation",
+        "kind": "sinkClass",
+        "name": "Authorisation decisions",
+        "verdict": "clear",
+        "evidence": "all routes gate on session middleware, read at server/auth.js"
+      },
+      {
+        "id": "sink:network-egress",
+        "kind": "sinkClass",
+        "name": "Network egress",
+        "verdict": "gap",
+        "evidence": "webhook handler not traced, no test env"
+      }
+    ]
+  }
 }

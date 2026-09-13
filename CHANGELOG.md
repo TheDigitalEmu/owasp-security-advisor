@@ -4,6 +4,38 @@ All notable changes to this project are documented here.
 
 Format based on Keep a Changelog. This project adheres to Semantic Versioning.
 
+## [1.4.0] - 2026-09-13
+
+### Fixed
+
+- Self-referential coverage. Coverage was traced-over-enumerated where the
+  review authored both numbers in the same pass, so it traced everything it
+  noticed and reported 100% no matter how little it looked at. On one real repo
+  at one commit, runs enumerated 11, 12, and 13 entry points and all reported
+  100%, while an independent mechanical count found 14. A run that discovered 2
+  findings looked identical to one that discovered 6.
+  - New `bin/enumerate.js` derives the attack-surface denominator from the code:
+    entry points by framework file-shape rules (Next.js profile, generic
+    fallback) plus the fixed ten sink classes. Its output is identical on every
+    run of the same commit.
+  - `bin/render-report.js` now computes coverage from a required per-element
+    verdict (clear, finding, gap) in a new `enumeration` block, not from
+    hand-authored integers. An element with no verdict counts as a gap and
+    lowers coverage, so a shallow review can no longer report a false 100%.
+    `--strict` refuses to render while any enumerated element is unaccounted for.
+  - `summary.schema.json` gains the `enumeration` block (either it or the legacy
+    `coverage` block is required). `doctrine/06` Phase 6 and `rubrics/scoring.md`
+    section 4 rewritten to require the derived denominator.
+
+### Honest limit
+
+- This makes coverage honest and fixes the fake-100%. It does not make the set
+  of discovered findings identical run to run: two runs can now agree on the
+  attack surface and disclose how much of it each examined, but can still
+  disagree on whether a given element harbours a finding. Eliminating that
+  residual needs multi-sample enumeration (a cost increase) or a static-analysis
+  engine, not a prompt.
+
 ## [1.3.0] - 2026-09-13
 
 ### Changed

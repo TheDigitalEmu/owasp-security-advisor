@@ -1,6 +1,6 @@
 ---
 name: owasp-advisor
-version: 1.3.0
+version: 1.4.0
 description: OWASP-aligned security review, sweep, or build for a file, folder, or repository. Three modes. Review (read-only) produces one management-facing scored report document. Sweep (read-only) produces the full in-depth report with a dashboard, per-finding files, and supporting documents in its own dated folder. Build writes code, remediating a sweep's findings one logged commit at a time; it is also triggered by fix, harden, remediate, or patch. On a bare call the skill asks which mode; a mode word or clear intent in the request selects it directly. Also provides a self-update protocol for the skill itself. Aligned to OWASP ASVS 5.0, Top 10 (2025), API Security Top 10 (2023), Proactive Controls 2024, and the Cheat Sheet Series.
 license: MIT
 ---
@@ -376,14 +376,18 @@ folder it was pointed at, adding its journal per
 ## 7. Helper scripts
 
 `bin/` holds Node helpers (Node >= 18, no dependencies). They do not find bugs,
-but `render-report.js` produces the report, which is the deliverable, so running
-it is part of Step 5, not optional. `reachability.js` and `deployment-report.js`
-are optional aids.
+but two of them are not optional: `enumerate.js` fixes the coverage denominator
+and `render-report.js` produces the report. `reachability.js` and
+`deployment-report.js` are optional aids.
 
+- `bin/enumerate.js` derives the attack-surface denominator (entry points and
+  sink classes) from the target's code, so coverage is measured against a fixed
+  set the review did not invent. Run it before Step 5. Without it, coverage is
+  self-authored and a shallow review reports a false 100%.
 - `bin/reachability.js` records a traced path from an entry point to a sink so
   a reviewer can check your Rule 2 work.
 - `bin/render-report.js` renders `summary.json` into the Markdown and HTML
-  reports.
+  reports and computes coverage from the enumeration verdicts.
 - `bin/deployment-report.js` produces the short go/no-go extract for a deploy
   decision.
 - `bin/version.js` prints the installed skill version and, with `--check`,

@@ -171,23 +171,35 @@ the review is part of the review.
 
 ### Record a verdict on every enumerated element
 
-This is what stops two runs from silently finding different things. Phase 2
-produced a set of entry points and Phase 3 a set of sinks. Before you converge,
-**every element of both sets carries one recorded verdict**, and there is no
-blank state:
+This is what stops two runs from silently finding different things, and it is
+the fix for the failure where a shallow run reports full coverage.
+
+**The denominator is not yours to invent.** Run `bin/enumerate.js --root
+<target-repo>` first. It derives the entry points from the code (route files,
+server actions, middleware, config, scheduled jobs) and adds the fixed ten sink
+classes, and writes `enumeration.json`. This list is identical on every run of
+the same commit, so you cannot enumerate eleven elements one run and thirteen the
+next and call both complete.
+
+Copy every element into `summary.json` under `enumeration`, and give each one a
+verdict. There is no blank state:
 
 | Verdict | Meaning | Where it goes |
 |---|---|---|
-| clear | Traced, no defect on the path (cite the control that stops it) | inventory, one line |
-| finding | Defect found, written up per `doctrine/07-findings-template.md` | `findings/` |
+| clear | Traced, no defect on the path (cite the control that stops it in `evidence`) | one line |
+| finding | Defect found, written up per `doctrine/07-findings-template.md` (put the F-NNN in `evidence`) | `findings/` |
 | gap | Not traced, or could not be settled from the code | `unverified.md`, and it debits coverage |
 
-A silently skipped element is the failure this prevents. If the CSP header, the
-dependency audit, or an entry point never got looked at, it is a `gap`, not an
-absence from the report. `coverage.entryPointsEnumerated` and `entryPointsTraced`
-in `summary.json` are counted from these verdicts, not estimated, so a run that
-looked at less produces a lower coverage figure next to its grade rather than a
-smaller, cleaner-looking finding set. See `rubrics/scoring.md` section 5a.
+An element you leave without a verdict is counted as a **gap** by
+`bin/render-report.js`, which lowers coverage. So a run that looked at less
+produces a lower coverage figure next to its grade, not a smaller,
+cleaner-looking finding set at a false 100%. `render-report.js --strict` refuses
+to render clean while any enumerated element is unaccounted for. This is the
+enforcement the old prose grid never had. See `rubrics/scoring.md` section 4.
+
+If `enumerate.js` reports it could not profile the framework, its entry-point
+list is best-effort: say so in the report, because coverage for the parts it
+could not enumerate is only as honest as you are.
 
 ---
 

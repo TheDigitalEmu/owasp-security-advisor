@@ -32,7 +32,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const VERSION = '1.3.0';
+const VERSION = '1.4.0';
 
 /* ---------------------------------------------------------------- scoring -
  * rubrics/scoring.md section 1.
@@ -207,12 +207,29 @@ function topPriority(findings) {
   return `**${t.id}: ${t.title}** (${t.severity}). ${t.summary || ''}`.trim();
 }
 
-function coverageWarning(pct, grade, cov) {
+function coverageWarning(pct, grade, cov, selfAuthored) {
   if (cov.entryPointsEnumerated === 0) {
     return (
       'No entry points were recorded. Coverage is unknown, so the grade ' +
       'above is not supported by any statement about how much was looked at. ' +
       'Treat this report as incomplete.'
+    );
+  }
+  if (selfAuthored) {
+    return (
+      `Coverage is ${pct}%, but the denominator was authored by the review ` +
+      'itself, not derived from the code by bin/enumerate.js. A self-authored ' +
+      '100% only means the review traced everything it happened to notice, not ' +
+      'everything that is there. Re-run with an enumeration manifest to make ' +
+      'this figure trustworthy.'
+    );
+  }
+  if (cov.gapCount > 0) {
+    return (
+      `Coverage is ${pct}%. ${cov.gapCount} of ${cov.entryPointsEnumerated} ` +
+      'enumerated elements were not accounted for and count as gaps. The ' +
+      'findings below are real, but the gaps are attack surface nobody looked ' +
+      'at, not surface confirmed clean.'
     );
   }
   if (pct < 80 && (grade === 'A' || grade === 'B')) {
@@ -343,7 +360,55 @@ function main() {
   }
 
   const s = score(findings);
-  const cov = data.coverage || { entryPointsEnumerated: 0, entryPointsTraced: 0 };
+
+  // Coverage. rubrics/scoring.md section 4.
+  //
+  // Preferred source: data.enumeration.elements, a fixed denominator produced
+  // by bin/enumerate.js, one row per real entry point and sink class, each with
+  // a verdict. Coverage is then computed here, not authored by the reviewer, so
+  // a run that looked at less cannot report 100%: an element with no verdict, or
+  // verdict "gap", counts against coverage. This breaks the self-referential
+  // coverage where the reviewer supplied both numbers in the same pass.
+  //
+  // Fallback: the older data.coverage integers, kept so existing summaries still
+  // render. A summary using the fallback is flagged, because its denominator is
+  // self-authored and its 100% means less.
+  let cov;
+  let coverageSelfAuthored = false;
+  const elements = data.enumeration && Array.isArray(data.enumeration.elements)
+    ? data.enumeration.elements
+    : null;
+
+  if (elements && elements.length > 0) {
+    const total = elements.length;
+    // A missing or blank verdict is a gap. Only clear/finding count as looked-at.
+    const looked = elements.filter(
+      (e) => e.verdict === 'clear' || e.verdict === 'finding'
+    ).length;
+    const gaps = elements.filter(
+      (e) => !e.verdict || e.verdict === 'gap'
+    );
+    cov = {
+      entryPointsEnumerated: total,
+      entryPointsTraced: looked,
+      gapCount: gaps.length,
+      gapElements: gaps.map((e) => e.id || e.name || 'unnamed element'),
+    };
+    // --strict fails a run that left denominator elements unaccounted for.
+    if (gaps.length > 0 && opts.strict) {
+      console.error(
+        `Coverage: ${gaps.length} enumerated element(s) have no verdict and ` +
+          'count as gaps. Every element from bin/enumerate.js needs clear, ' +
+          'finding, or gap. Unaccounted elements:'
+      );
+      for (const e of cov.gapElements) console.error(`  ${e}`);
+      process.exit(1);
+    }
+  } else {
+    coverageSelfAuthored = true;
+    cov = data.coverage || { entryPointsEnumerated: 0, entryPointsTraced: 0 };
+  }
+
   const pct =
     cov.entryPointsEnumerated > 0
       ? Math.round((cov.entryPointsTraced / cov.entryPointsEnumerated) * 100)
@@ -351,7 +416,7 @@ function main() {
 
   const eng = data.engagement || {};
   const unverifiedCount = findings.filter((f) => f.verified !== true).length;
-  const warning = coverageWarning(pct, s.grade, cov);
+  const warning = coverageWarning(pct, s.grade, cov, coverageSelfAuthored);
 
   const sorted = [...findings].sort(
     (a, b) => SEV_RANK[b.severity] - SEV_RANK[a.severity]

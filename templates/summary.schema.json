@@ -4,7 +4,11 @@
   "title": "OWASP Security Advisor review summary",
   "description": "Machine-readable output of a review. Written to <findings-root>/summary.json. The score block is computed by bin/render-report.js from the findings array and must not be hand-authored; rubrics/scoring.md is the authoritative model.",
   "type": "object",
-  "required": ["schemaVersion", "engagement", "coverage", "findings"],
+  "required": ["schemaVersion", "engagement", "findings"],
+  "anyOf": [
+    { "required": ["enumeration"] },
+    { "required": ["coverage"] }
+  ],
   "additionalProperties": false,
   "properties": {
     "schemaVersion": {
@@ -59,9 +63,39 @@
         }
       }
     },
+    "enumeration": {
+      "type": "object",
+      "description": "The fixed attack-surface denominator from bin/enumerate.js, plus the reviewer's verdict on each element. Coverage is computed from this by bin/render-report.js, not authored by hand, so a review that looked at less cannot report full coverage. Strongly preferred over the legacy coverage integers. See rubrics/scoring.md section 4.",
+      "required": ["elements"],
+      "additionalProperties": true,
+      "properties": {
+        "generatedBy": { "type": "string" },
+        "profile": { "type": "string" },
+        "elements": {
+          "type": "array",
+          "description": "One row per entry point and sink class from enumerate.js. Every row needs a verdict. A row with no verdict is treated as a gap.",
+          "items": {
+            "type": "object",
+            "required": ["id", "verdict"],
+            "additionalProperties": true,
+            "properties": {
+              "id": { "type": "string" },
+              "kind": { "type": "string", "enum": ["entryPoint", "sinkClass"] },
+              "name": { "type": "string" },
+              "verdict": {
+                "type": ["string", "null"],
+                "enum": ["clear", "finding", "gap", null],
+                "description": "clear: traced, no defect (cite the control). finding: defect written up. gap: not traced or unsettled, debits coverage. null: treated as gap."
+              },
+              "evidence": { "type": "string", "description": "For clear, the control that stops it. For finding, the F-NNN id." }
+            }
+          }
+        }
+      }
+    },
     "coverage": {
       "type": "object",
-      "description": "Reported alongside the score and never folded into it. See rubrics/scoring.md section 4.",
+      "description": "Legacy self-authored coverage, kept for backward compatibility. Prefer the enumeration block above, whose denominator is derived from the code. A summary using only this block renders with a warning that its coverage is self-authored. See rubrics/scoring.md section 4.",
       "required": ["entryPointsEnumerated", "entryPointsTraced"],
       "additionalProperties": false,
       "properties": {

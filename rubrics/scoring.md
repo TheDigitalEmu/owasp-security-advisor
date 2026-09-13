@@ -135,7 +135,21 @@ score that gets used to argue for shipping.
 ## 4. Coverage, reported alongside the score, never folded into it
 
 The score says how bad what you found is. It says nothing about how much you
-looked at. Report both, adjacent, always:
+looked at. Report both, adjacent, always.
+
+**Coverage is measured against a denominator you did not invent this run.** Run
+`bin/enumerate.js` first: it derives the entry points from the code and adds the
+fixed ten sink classes, producing a list identical on every run of the same
+commit. You record a verdict (clear, finding, gap) on every element, and
+`bin/render-report.js` computes coverage from those verdicts. An element with no
+verdict is a gap. This is deliberate: without it, coverage is self-referential,
+the reviewer supplies both the numerator and the denominator in the same pass,
+traces everything noticed, and reports 100% no matter how little was examined.
+That failure is exactly how one run found two issues and another found six, both
+claiming full coverage. A derived denominator makes a shallow run show a low
+coverage figure instead of a false clean bill.
+
+The figures reported:
 
 | Metric | Definition |
 |---|---|
