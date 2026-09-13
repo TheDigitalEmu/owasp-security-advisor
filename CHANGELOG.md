@@ -4,6 +4,29 @@ All notable changes to this project are documented here.
 
 Format based on Keep a Changelog. This project adheres to Semantic Versioning.
 
+## [1.3.0] - 2026-09-13
+
+### Changed
+
+- Three explicit modes replace the old two-mode split, and the skill no longer
+  guesses which one you meant. On a bare `/owasp-advisor` call it asks which
+  mode; a mode word or clear intent in the request selects it directly, and a
+  single ambiguous mode word is confirmed before running.
+  - **Review** (read-only): one management-facing scored document at
+    `reviews/review-<YYYYMMDD>-<HHMM>.md`, dated so reviews never overwrite each
+    other.
+  - **Sweep** (read-only): the full in-depth report in its own dated folder
+    `sweeps/<YYYYMMDD>-<HHMM>-<short-name>/`.
+  - **Build** (writes code): remediates a sweep's findings. It uses a specified
+    sweep, or the last-hour sweep automatically, asks about an earlier same-day
+    sweep, and otherwise runs a fresh sweep first. Also triggered by fix, harden,
+    remediate, patch.
+- Rule 1 now names Review and Sweep as the read-only modes. Rule 4 gains a
+  scoped exception so Build can follow a project rule that requires a worktree
+  branch, with the first push and deploy still the user's explicit call.
+- Output layout (section 6) and the procedure header updated for the three
+  modes.
+
 ## [1.2.1] - 2026-09-13
 
 ### Fixed

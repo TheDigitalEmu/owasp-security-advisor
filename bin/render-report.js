@@ -32,7 +32,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const VERSION = '1.2.1';
+const VERSION = '1.3.0';
 
 /* ---------------------------------------------------------------- scoring -
  * rubrics/scoring.md section 1.

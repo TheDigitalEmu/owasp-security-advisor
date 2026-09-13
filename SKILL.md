@@ -1,7 +1,7 @@
 ---
 name: owasp-advisor
-version: 1.2.1
-description: OWASP-aligned security review or sweep of a file, folder, or repository. Review mode (read-only) when the user asks to review, audit, assess, or scan, asks how secure their code is, or whether it is ready to ship: it produces a deterministic scored report and never edits source. Build mode, also called a sweep, when the user asks to sweep, fix, remediate, harden, or patch: it changes code and logs each commit with its own OWASP self-review in a dedicated sweep folder. The word the user uses picks the mode: "sweep" means build mode, "review" means review mode. Also provides a self-update protocol for the skill itself. Aligned to OWASP ASVS 5.0, Top 10 (2025), API Security Top 10 (2023), Proactive Controls 2024, and the Cheat Sheet Series.
+version: 1.3.0
+description: OWASP-aligned security review, sweep, or build for a file, folder, or repository. Three modes. Review (read-only) produces one management-facing scored report document. Sweep (read-only) produces the full in-depth report with a dashboard, per-finding files, and supporting documents in its own dated folder. Build writes code, remediating a sweep's findings one logged commit at a time; it is also triggered by fix, harden, remediate, or patch. On a bare call the skill asks which mode; a mode word or clear intent in the request selects it directly. Also provides a self-update protocol for the skill itself. Aligned to OWASP ASVS 5.0, Top 10 (2025), API Security Top 10 (2023), Proactive Controls 2024, and the Cheat Sheet Series.
 license: MIT
 ---
 
@@ -22,51 +22,90 @@ Reviewing without an AI agent at all? Read `HUMAN_GUIDE.md`.
 
 ## 1. Modes
 
-This skill has two modes. Decide which one you are in **before** you touch
-anything, and **say the mode back to the user in your first sentence.** The
-user's own words decide the mode. Obey the word they used; do not override it
-with your own judgment about what they "really" want.
+This skill has three modes: **Review**, **Sweep**, and **Build**. You must be in
+exactly one before you touch anything, and you say which one back to the user
+before you start.
 
-### Mode selection, by the word the user used
+### Mode selection (do this first, every time)
 
-Match the user's instruction against this table. The verb they chose is
-decisive.
+1. **Read the invocation for intent.** If the user's words clearly mean one mode,
+   you are in that mode. Act on the intent the language shows; do not ask a
+   question you already have the answer to.
+   - "review", "audit", "assess", "is this secure", "sign-off for management" mean **Review**.
+   - "sweep", "full sweep", "deep audit", "the works" mean **Sweep**.
+   - "build", "fix", "harden", "remediate", "patch", "write the fixes", or any
+     wording that asks you to change code mean **Build**.
+   - An explicit first word settles it outright: `/owasp-advisor review`,
+     `/owasp-advisor sweep`, `/owasp-advisor build ...`.
 
-| The user said | Mode | Why |
-|---|---|---|
-| review, audit, assess, check, "is this secure", "can I ship this", vulnerability scan, threat model | Review | They want to know the state, not change it |
-| **sweep**, fix, remediate, harden, patch, "clean this up", "make it secure" | **Build** | They want the code changed and the work logged |
+2. **If exactly one of the three words appears but you are not certain of intent,
+   confirm it.** Show the user the mode and its one-line description and wait for
+   a yes or no:
 
-If the user says **sweep**, you are in **build mode**. That is what sweep means
-in this skill (a build-time sweep, governed by
-`doctrine/20-build-time-sweep-protocol.md`). Do not run a read-only review when
-the user asked for a sweep, and do not silently downgrade a sweep to a review
-because review felt safer. If you genuinely cannot tell which they want, ask one
-question and wait. Do not guess toward review.
+   > You asked for a **Sweep**: the full, dated, in-depth report in its own
+   > folder, read-only. Confirm?
 
-### Review mode
+   A yes proceeds. A no drops you to step 3 as if no word appeared.
 
-Read-only. You are an auditor. You produce a scored report and nothing else.
-No source changes.
+3. **If no mode word appears, ask which mode**, offering all three by name and
+   description, and wait:
 
-Output: a findings tree (section 6) and a scored report.
+   > Which mode?
+   > - **Review**: one management-facing report document, scored, read-only.
+   > - **Sweep**: the full in-depth report in its own dated folder, read-only.
+   > - **Build**: write the fixes, from a sweep's findings.
 
-### Build mode (sweep)
+Never guess between modes when intent is unclear. Never silently pick one.
 
-You write code. Triggered when the user asked to sweep, fix, remediate, harden,
-or patch. Every commit carries its own OWASP self-review in the journal, in the
-same commit, and **the sweep gets its own folder** under
-`<findings-root>/sweeps/<YYYYMMDD>-<HHMM>-<short-name>/` per
-`doctrine/20-build-time-sweep-protocol.md`. Create that folder before the first
-commit.
+### Review
 
-Build mode is governed by `doctrine/20-build-time-sweep-protocol.md`. Read it
-in full before the first commit. Do not improvise the sweep structure.
+**Read-only.** A single, self-contained report document meant to be handed to a
+non-specialist (upper management, a client, a stakeholder) as evidence of the
+codebase's security posture. Scored. It does not touch source.
 
-You do not drift from review mode into build mode because a fix looked easy, and
-you do not drift the other way either: a sweep the user asked for is a sweep.
-Finding something broken during a review is not authorisation to fix it. Report
-it, and ask.
+Output: one Markdown document at
+`<findings-root>/reviews/review-<YYYYMMDD>-<HHMM>.md`. The timestamp in the name
+is mandatory so a second review never overwrites the first. End with a short
+spoken summary: grade, counts, coverage, the one thing to fix first.
+
+### Sweep
+
+**Read-only.** The deepest, most thorough report the skill can produce: the full
+findings tree, the HTML and Markdown dashboards, per-finding files, the machine
+summary, inventory, threat model, and every supporting document. This is your
+best possible work, and it is the artifact Build later consumes.
+
+Output: its own dated folder,
+`<findings-root>/sweeps/<YYYYMMDD>-<HHMM>-<short-name>/`, laid out per section 6.
+Create the folder first. No source changes.
+
+### Build
+
+**Writes code.** Also triggered by "fix", "harden", "remediate", "patch", or any
+wording that asks you to change the code. Build works from a sweep's findings,
+loading each into a task list and remediating, one commit per item, each commit
+carrying its own OWASP self-review per
+`doctrine/20-build-time-sweep-protocol.md`.
+
+Which sweep Build works from:
+
+- **Specified** (`/owasp-advisor build <sweep details>`): use that sweep.
+- **Unspecified, a sweep exists from the last hour**: use it automatically.
+- **Unspecified, a sweep exists earlier the same day (outside the hour)**: tell
+  the user it exists and ask whether they mean that one.
+- **Unspecified, no usable sweep** (or `/owasp-advisor build new`, or wording
+  that asks for a fresh start): run a new Sweep first, then build from it.
+
+Timestamps are system local time, and only sweeps for this same project count.
+
+Build changes code, so the project's own rules apply: work where the project
+requires (a worktree off a new branch if that is the rule, never main for
+feature work), and **the first push and any deploy are the user's call.** Ask
+for approval wherever it is needed, and never push or deploy without an explicit
+yes.
+
+You do not drift between modes. A Review stays read-only even when a fix looks
+trivial: report it and ask. A Build the user asked for is a Build.
 
 ---
 
@@ -75,14 +114,15 @@ it, and ask.
 These are not style preferences. Breaking any one of them invalidates the
 review.
 
-### Rule 1: Read-only on application code in review mode
+### Rule 1: Read-only on application code in Review and Sweep
 
 No edits. No refactors. No "while I'm here" fixes. No reformatting. No
 dependency bumps. No adding a missing test. If you believe a change is
-urgent, say so in the report and stop.
+urgent, say so in the report and stop. This rule binds Review and Sweep. Build
+is the only mode that writes code, and only after the mode is chosen.
 
-You may write to the findings tree (section 6). That is the only place review
-mode writes.
+You may write to the findings tree (section 6). That is the only place Review
+and Sweep write.
 
 ### Rule 2: Verify every finding end to end before asserting it
 
@@ -107,11 +147,17 @@ from the README, not from a comment, not from a previous session.
 Inventory before plan. Establish what is actually there before you decide what
 to do about it.
 
-### Rule 4: Never create branches
+### Rule 4: Never create branches to route around a block
 
 Work on the branch you were given. If a push is blocked, **stop and ask the
 user**. Do not create a branch to route around the block. Do not force push.
 Do not rebase a shared branch.
+
+The one exception is Build mode following the target project's own stated rule.
+If the project requires that code changes land on a worktree off a new branch,
+that is the project instructing you, not you routing around a block: follow it,
+after agreeing the branch and scope with the user. The first push and any deploy
+remain the user's explicit call (see the Build mode section).
 
 ### Rule 5: Never `git checkout` against a shared working tree
 
@@ -142,7 +188,16 @@ Use commas, periods, colons, parentheses, or two hyphens.
 
 ---
 
-## 3. Procedure (review mode)
+## 3. Procedure (Review and Sweep)
+
+This is the read-only investigation both Review and Sweep run. The work is the
+same; the output differs. **Sweep** writes the full tree of section 6 into its
+dated folder. **Review** runs the same investigation but delivers a single
+management-facing document at `reviews/review-<YYYYMMDD>-<HHMM>.md`: the score,
+the grade, the counts, coverage, the top items to fix, and a plain-language
+summary a non-specialist can act on, without the per-finding files and raw
+supporting documents. Build does not use this procedure; see
+`doctrine/20-build-time-sweep-protocol.md`.
 
 Work these in order. Do not skip to step 5 because you spotted something in
 step 1. Note it, keep going, come back.
@@ -289,23 +344,32 @@ the findings tree for that engagement.
 
 ## 6. Output layout
 
-Everything the review writes goes under a findings root chosen at step 0.
-Default `<target-repo>/security-findings/`, but respect the user's choice, and
-confirm it is git-ignored before writing anything into a repo.
+Everything goes under a findings root chosen at step 0. Default
+`<target-repo>/security-findings/`, but respect the user's choice, and confirm it
+is git-ignored before writing anything into a repo.
+
+Each mode writes to its own place, so nothing overwrites anything:
 
 ```
 <findings-root>/
-  summary.json              machine-readable, shape in templates/summary.schema.json
-  report.md                 rendered from templates/report.md
-  report.html              rendered from templates/report.html
-  inventory.md              step 1 output
-  threat-model.md           step 2 output
-  findings/
-    <SEVERITY>-<NNN>-<slug>.md
-  unverified.md             everything Rule 2 held at Info
+  reviews/
+    review-<YYYYMMDD>-<HHMM>.md      Review mode: one self-contained document
+  sweeps/
+    <YYYYMMDD>-<HHMM>-<short-name>/  Sweep mode: the full report in its own folder
+      summary.json                   machine-readable, shape in templates/summary.schema.json
+      report.md                      rendered from templates/report.md
+      report.html                    rendered from templates/report.html
+      inventory.md                   step 1 output
+      threat-model.md                step 2 output
+      findings/
+        <SEVERITY>-<NNN>-<slug>.md
+      unverified.md                  everything Rule 2 held at Info
 ```
 
-Build mode adds `sweeps/`. See `doctrine/20-build-time-sweep-protocol.md`.
+Build mode does not create a report folder of its own. It works inside the sweep
+folder it was pointed at, adding its journal per
+`doctrine/20-build-time-sweep-protocol.md`. A Review is a single dated file in
+`reviews/` and produces no folder.
 
 ---
 
