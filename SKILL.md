@@ -1,6 +1,6 @@
 ---
 name: owasp-advisor
-version: 1.1.0
+version: 1.1.1
 description: OWASP-aligned security review of a file, folder, or repository. Use when the user asks for a security review, security sweep, security audit, OWASP review, vulnerability scan, threat model, secure code review, or asks how secure their code is, or whether something is ready to deploy from a security perspective. Also provides a build mode for security-logged remediation work, and a self-update protocol for the skill itself. Produces a deterministic scored report with a dashboard (HTML and Markdown), per-finding files, and a machine-readable summary. Read-only on application code in review mode; never edits source. Aligned to OWASP ASVS 5.0, Top 10 (2025), API Security Top 10 (2023), Proactive Controls 2024, and the Cheat Sheet Series.
 license: MIT
 ---
@@ -210,8 +210,28 @@ reviewer who sees only survivors cannot judge your rate.
 
 ### Step 5: Score and report
 
-Apply `rubrics/scoring.md`. Write findings using
-`doctrine/07-findings-template.md`. Render with `templates/`.
+The rendered report is the deliverable. A review that ends in chat prose with no
+`report.html` and no score has not produced its output. Do these in order, all
+of them:
+
+1. Write each finding as a file using `doctrine/07-findings-template.md`.
+2. Write `<findings-root>/summary.json` to the shape in
+   `templates/summary.schema.json`. Every finding gets `impact` and
+   `reachability`; the schema lists the allowed values.
+3. Run the renderer. It computes the score and writes the reports:
+
+   ```
+   node bin/render-report.js -i <findings-root>/summary.json
+   ```
+
+4. Confirm `report.html`, `report.md`, and a `score` block in `summary.json` now
+   exist. If they do not, stop and fix it before handing back. Do not describe a
+   score you did not render.
+
+If Node is genuinely unavailable, say so explicitly to the user, compute the
+grade by hand from `rubrics/scoring.md`, and still write `summary.json` so the
+report can be rendered the moment Node is present. Silently skipping the report
+is not an option.
 
 ### Step 6: Hand back
 
@@ -269,8 +289,10 @@ Build mode adds `sweeps/`. See `doctrine/20-build-time-sweep-protocol.md`.
 
 ## 7. Helper scripts
 
-`bin/` holds optional Node helpers (Node >= 18, no dependencies). The review is
-valid without them; they save typing, they do not find bugs.
+`bin/` holds Node helpers (Node >= 18, no dependencies). They do not find bugs,
+but `render-report.js` produces the report, which is the deliverable, so running
+it is part of Step 5, not optional. `reachability.js` and `deployment-report.js`
+are optional aids.
 
 - `bin/reachability.js` records a traced path from an entry point to a sink so
   a reviewer can check your Rule 2 work.

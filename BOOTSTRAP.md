@@ -168,8 +168,12 @@ Full procedure in section 3 of `SKILL.md`. The short version:
 2. Threat model. Short and concrete.
 3. Doctrine passes, in the order given in `SKILL.md` section 3.
 4. Verification pass. Try to refute every finding before it gets a severity.
-5. Score with `rubrics/scoring.md`, write findings with
-   `doctrine/07-findings-template.md`, render with `templates/`.
+5. Score and report. Write findings with `doctrine/07-findings-template.md`,
+   write `summary.json` to `templates/summary.schema.json`, then run
+   `node bin/render-report.js -i <findings-root>/summary.json` to produce
+   `report.html` and `report.md`. Confirm they exist. The rendered report is the
+   deliverable; a review with no `report.html` is unfinished. See `SKILL.md`
+   Step 5.
 6. Hand back: the score, the counts, the one thing to fix first, and
    everything you could not verify.
 

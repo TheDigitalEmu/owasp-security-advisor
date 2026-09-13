@@ -85,7 +85,12 @@ PROCEDURE
    unverified, or dropped. Record what you dropped and why.
 5. Score and report. rubrics/scoring.md is authoritative:
    severity = impact x reachability, then capped by the verification ceiling.
-   Write findings using doctrine/07-findings-template.md.
+   Write findings using doctrine/07-findings-template.md, write summary.json to
+   templates/summary.schema.json, then run
+   node bin/render-report.js -i <findings-root>/summary.json to produce
+   report.html and report.md. The rendered report is the deliverable; confirm it
+   exists before handing back. If Node is unavailable, say so, score by hand from
+   rubrics/scoring.md, and still write summary.json for later rendering.
 6. Hand back. Score, counts by severity, the single most important thing to fix
    first, and everything you could not verify. If the review feeds a deploy
    decision, bin/deployment-report.js turns the summary into a go/no-go extract

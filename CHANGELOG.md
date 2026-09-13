@@ -4,6 +4,17 @@ All notable changes to this project are documented here.
 
 Format based on Keep a Changelog. This project adheres to Semantic Versioning.
 
+## [1.1.1] - 2026-09-13
+
+### Fixed
+
+- The report was not being produced. Step 5 said only "render with templates/"
+  and the helper scripts were labelled optional, so a review would end in chat
+  prose with no `report.html` and no score. Step 5 is now an explicit, mandatory
+  procedure (write `summary.json`, run `bin/render-report.js`, confirm the
+  outputs exist), and the same instruction was corrected in `BOOTSTRAP.md` and
+  `SYSTEM_PROMPT.md`. `render-report.js` is no longer described as optional.
+
 ## [1.1.0] - 2026-09-13
 
 ### Added

@@ -1,6 +1,6 @@
 {
   "name": "owasp-advisor",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "OWASP-aligned security review protocol for AI coding agents and human reviewers. Produces a deterministic scored report. Read-only on application code in review mode. Aligned to ASVS 5.0, Top 10 (2025), API Security Top 10 (2023), and Proactive Controls 2024.",
   "license": "MIT",
   "author": "Digital Emu",
