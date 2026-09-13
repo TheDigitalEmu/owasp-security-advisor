@@ -4,6 +4,19 @@ All notable changes to this project are documented here.
 
 Format based on Keep a Changelog. This project adheres to Semantic Versioning.
 
+## [1.2.1] - 2026-09-13
+
+### Fixed
+
+- "Sweep" was ambiguous and defaulted to review mode. The word "sweep" appeared
+  in the review-trigger list, so a user asking for a sweep got a read-only
+  review with no sweep folder, no code changes, and no journal. Mode selection
+  is now a table keyed on the user's verb, and "sweep" maps unambiguously to
+  build mode. The build-mode section states that the sweep folder under
+  `sweeps/<YYYYMMDD>-<HHMM>-<short-name>/` is created before the first commit,
+  and the skill must say the chosen mode back in its first sentence and never
+  silently downgrade a sweep to a review.
+
 ## [1.2.0] - 2026-09-13
 
 ### Changed

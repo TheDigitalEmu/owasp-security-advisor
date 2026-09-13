@@ -1,7 +1,7 @@
 ---
 name: owasp-advisor
-version: 1.2.0
-description: OWASP-aligned security review of a file, folder, or repository. Use when the user asks for a security review, security sweep, security audit, OWASP review, vulnerability scan, threat model, secure code review, or asks how secure their code is, or whether something is ready to deploy from a security perspective. Also provides a build mode for security-logged remediation work, and a self-update protocol for the skill itself. Produces a deterministic scored report with a dashboard (HTML and Markdown), per-finding files, and a machine-readable summary. Read-only on application code in review mode; never edits source. Aligned to OWASP ASVS 5.0, Top 10 (2025), API Security Top 10 (2023), Proactive Controls 2024, and the Cheat Sheet Series.
+version: 1.2.1
+description: OWASP-aligned security review or sweep of a file, folder, or repository. Review mode (read-only) when the user asks to review, audit, assess, or scan, asks how secure their code is, or whether it is ready to ship: it produces a deterministic scored report and never edits source. Build mode, also called a sweep, when the user asks to sweep, fix, remediate, harden, or patch: it changes code and logs each commit with its own OWASP self-review in a dedicated sweep folder. The word the user uses picks the mode: "sweep" means build mode, "review" means review mode. Also provides a self-update protocol for the skill itself. Aligned to OWASP ASVS 5.0, Top 10 (2025), API Security Top 10 (2023), Proactive Controls 2024, and the Cheat Sheet Series.
 license: MIT
 ---
 
@@ -23,28 +23,50 @@ Reviewing without an AI agent at all? Read `HUMAN_GUIDE.md`.
 ## 1. Modes
 
 This skill has two modes. Decide which one you are in **before** you touch
-anything, and say so out loud to the user.
+anything, and **say the mode back to the user in your first sentence.** The
+user's own words decide the mode. Obey the word they used; do not override it
+with your own judgment about what they "really" want.
 
-### Review mode (default)
+### Mode selection, by the word the user used
+
+Match the user's instruction against this table. The verb they chose is
+decisive.
+
+| The user said | Mode | Why |
+|---|---|---|
+| review, audit, assess, check, "is this secure", "can I ship this", vulnerability scan, threat model | Review | They want to know the state, not change it |
+| **sweep**, fix, remediate, harden, patch, "clean this up", "make it secure" | **Build** | They want the code changed and the work logged |
+
+If the user says **sweep**, you are in **build mode**. That is what sweep means
+in this skill (a build-time sweep, governed by
+`doctrine/20-build-time-sweep-protocol.md`). Do not run a read-only review when
+the user asked for a sweep, and do not silently downgrade a sweep to a review
+because review felt safer. If you genuinely cannot tell which they want, ask one
+question and wait. Do not guess toward review.
+
+### Review mode
 
 Read-only. You are an auditor. You produce a scored report and nothing else.
-If the user asked "is this secure", "review this", "audit this", "can I ship
-this", you are in review mode. If you are not sure which mode you are in, you
-are in review mode.
+No source changes.
 
-Output: a findings tree (section 6) and a scored report. No source changes.
+Output: a findings tree (section 6) and a scored report.
 
-### Build mode (explicit opt-in only)
+### Build mode (sweep)
 
-You write code. The user must have explicitly asked you to fix, remediate,
-harden, or sweep. Every commit carries its own OWASP self-review in the
-journal, in the same commit.
+You write code. Triggered when the user asked to sweep, fix, remediate, harden,
+or patch. Every commit carries its own OWASP self-review in the journal, in the
+same commit, and **the sweep gets its own folder** under
+`<findings-root>/sweeps/<YYYYMMDD>-<HHMM>-<short-name>/` per
+`doctrine/20-build-time-sweep-protocol.md`. Create that folder before the first
+commit.
 
 Build mode is governed by `doctrine/20-build-time-sweep-protocol.md`. Read it
 in full before the first commit. Do not improvise the sweep structure.
 
-You do not drift from review mode into build mode because a fix looked easy.
-Finding something broken is not authorisation to fix it. Report it, and ask.
+You do not drift from review mode into build mode because a fix looked easy, and
+you do not drift the other way either: a sweep the user asked for is a sweep.
+Finding something broken during a review is not authorisation to fix it. Report
+it, and ask.
 
 ---
 
