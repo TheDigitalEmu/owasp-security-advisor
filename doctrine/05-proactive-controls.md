@@ -2,7 +2,7 @@
 
 **Doctrine ID:** `05-proactive-controls`
 **Mode:** review and build
-**Source standards:** OWASP Proactive Controls v4
+**Source standards:** OWASP Proactive Controls 2024
 
 ---
 
@@ -43,10 +43,10 @@ box once a finding already exists, and how to order the recommendations.
 
 ## The control set
 
-Proactive Controls v4 names ten controls. If you cite one and are not certain
-of its ordinal, **use the name and omit the number**. An invented `C7` is a
-Rule 3 violation dressed as precision, and a reader who catches one fabricated
-citation stops trusting every citation in the report.
+The Proactive Controls 2024 edition names ten controls, C1 to C10. If you cite
+one and are not certain of its ordinal, **use the name and omit the number**. An
+invented `C7` is a Rule 3 violation dressed as precision, and a reader who
+catches one fabricated citation stops trusting every citation in the report.
 
 ### Implement access control
 

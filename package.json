@@ -1,7 +1,7 @@
 {
-  "name": "owasp-security-advisor",
-  "version": "1.0.0",
-  "description": "OWASP-aligned security review protocol for AI coding agents and human reviewers. Produces a deterministic scored report. Read-only on application code in review mode.",
+  "name": "owasp-advisor",
+  "version": "1.1.0",
+  "description": "OWASP-aligned security review protocol for AI coding agents and human reviewers. Produces a deterministic scored report. Read-only on application code in review mode. Aligned to ASVS 5.0, Top 10 (2025), API Security Top 10 (2023), and Proactive Controls 2024.",
   "license": "MIT",
   "author": "Digital Emu",
   "type": "module",
@@ -28,12 +28,14 @@
   "bin": {
     "owasp-reachability": "bin/reachability.js",
     "owasp-render-report": "bin/render-report.js",
-    "owasp-deployment-report": "bin/deployment-report.js"
+    "owasp-deployment-report": "bin/deployment-report.js",
+    "owasp-version": "bin/version.js"
   },
   "scripts": {
     "reachability": "node bin/reachability.js",
     "render": "node bin/render-report.js",
-    "deployment": "node bin/deployment-report.js"
+    "deployment": "node bin/deployment-report.js",
+    "version-check": "node bin/version.js --check"
   },
   "files": [
     "SKILL.md",
@@ -43,6 +45,7 @@
     "doctrine/",
     "rubrics/",
     "templates/",
+    "examples/",
     "bin/"
   ],
   "dependencies": {}

@@ -2,7 +2,7 @@
 
 An OWASP-aligned security review protocol for AI coding agents and human
 reviewers. It produces a scored, evidence-backed report against ASVS 5.0, the
-Top 10 (2021), the API Security Top 10 (2023), Proactive Controls v4, and the
+Top 10 (2025), the API Security Top 10 (2023), Proactive Controls 2024, and the
 Cheat Sheet Series.
 
 It is read-only on your application code. It does not run your code, send it
@@ -45,8 +45,11 @@ correctly-run review with no further instruction from you.
 
 ```
 git clone https://github.com/TheDigitalEmu/owasp-security-advisor.git \
-  ~/.claude/skills/owasp-security-advisor
+  ~/.claude/skills/owasp-advisor
 ```
+
+The skill is named `owasp-advisor`, so the directory is `owasp-advisor`. The
+clone URL keeps the repository's GitHub name, `owasp-security-advisor`.
 
 Restart. Then ask for a security review in whatever words you would normally
 use.
@@ -117,10 +120,12 @@ is the compensating control.
 
 | File | Scope |
 |---|---|
+| [`00`](doctrine/00-currency-log.md) | Which OWASP standards the skill tracks, and their state |
+| [`01`](doctrine/01-update-protocol.md) | Self-update. How the skill checks its version and upgrades |
 | [`02`](doctrine/02-asvs-checklist.md) | ASVS 5.0 coverage backstop |
 | [`03`](doctrine/03-api-top10-checklist.md) | API Security Top 10 (2023) |
-| [`04`](doctrine/04-web-top10-checklist.md) | Top 10 (2021) |
-| [`05`](doctrine/05-proactive-controls.md) | Proactive Controls v4 |
+| [`04`](doctrine/04-web-top10-checklist.md) | Top 10 (2025) |
+| [`05`](doctrine/05-proactive-controls.md) | Proactive Controls 2024 |
 | [`06`](doctrine/06-investigation-playbook.md) | How to investigate. The method |
 | [`07`](doctrine/07-findings-template.md) | The shape of a finding |
 | [`08`](doctrine/08-secrets-and-config.md) | Secrets and configuration |

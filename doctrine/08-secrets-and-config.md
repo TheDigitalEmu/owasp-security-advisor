@@ -3,7 +3,7 @@
 **Doctrine ID:** `08-secrets-and-config`
 **Mode:** review and build
 **Source standards:** ASVS 5.0 chapter 14 (configuration), ASVS chapter 6
-(stored cryptography), OWASP Top 10 2021 A05 (Security Misconfiguration),
+(stored cryptography), OWASP Top 10 2025 A02 (Security Misconfiguration),
 OWASP Secrets Management Cheat Sheet
 
 ---

@@ -45,7 +45,7 @@ severity: Critical | High | Medium | Low | Info
 verified: true | false
 confidence: high | medium | low
 owasp:
-  - <e.g. A01:2021 Broken Access Control>
+  - <e.g. A01:2025 Broken Access Control>
   - <e.g. API1:2023 Broken Object Level Authorization>
 asvs:
   - <e.g. 4.1.3>

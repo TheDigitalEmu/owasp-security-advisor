@@ -4,6 +4,34 @@ All notable changes to this project are documented here.
 
 Format based on Keep a Changelog. This project adheres to Semantic Versioning.
 
+## [1.1.0] - 2026-09-13
+
+### Added
+
+- `doctrine/00-currency-log.md`: audit trail of which OWASP standards the skill
+  tracks, their state, and how to run a currency check.
+- `doctrine/01-update-protocol.md`: self-update protocol. A third mode (update)
+  alongside review and build. Read local version, compare upstream, confirm,
+  fast-forward pull, verify.
+- `bin/version.js`: prints the installed version and, with `--check`, compares
+  it against the upstream git tag. Exit 10 when an update is available.
+- `examples/summary.json`: a valid minimal summary for the install smoke test
+  and as an authoring reference.
+- `version:` field in `SKILL.md` frontmatter, now the authoritative version.
+
+### Changed
+
+- Skill name is now `owasp-advisor` (was `owasp-security-advisor`). The install
+  directory changes to match; the GitHub repository name is unchanged.
+- Top 10 updated from 2021 to 2025 (`doctrine/04` rewritten; SSRF folded into
+  A01; new A03 Software Supply Chain Failures and A10 Mishandling of Exceptional
+  Conditions; renames and re-rankings). Category citations updated across
+  `doctrine/07, 08, 09, 10, 13, 15, 18` and the top-level alignment statements.
+- Proactive Controls label corrected from "v4" to the 2024 edition. Control
+  names were already the 2024 set; only the label changed.
+- `BOOTSTRAP.md` verify steps use install-relative bin paths and add a fixture
+  smoke test and a version check.
+
 ## [1.0.0] - 2026-07-17
 
 First public release.

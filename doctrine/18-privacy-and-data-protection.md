@@ -2,7 +2,7 @@
 
 **Doctrine ID:** `18-privacy-and-data-protection`
 **Mode:** review and build
-**Source standards:** ASVS 5.0 data protection chapter, OWASP Top 10 2021 A02
+**Source standards:** ASVS 5.0 data protection chapter, OWASP Top 10 2025 A04
 (Cryptographic Failures), OWASP Privacy Risks (Top 10), OWASP User Privacy
 Protection Cheat Sheet, OWASP Logging Cheat Sheet
 

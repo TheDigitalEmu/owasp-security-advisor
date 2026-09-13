@@ -44,11 +44,16 @@ User-level skills are read from `~/.claude/skills/<skill-name>/`. Clone there:
 
 ```
 git clone https://github.com/TheDigitalEmu/owasp-security-advisor.git \
-  ~/.claude/skills/owasp-security-advisor
+  ~/.claude/skills/owasp-advisor
 ```
 
+The skill's name is `owasp-advisor` (the `SKILL.md` frontmatter `name`), so the
+directory must be `owasp-advisor`. The clone URL still ends in
+`owasp-security-advisor` because that is the repository's name on GitHub; the two
+differ on purpose.
+
 On Windows, `~` resolves to your user profile directory; the path is
-`%USERPROFILE%\.claude\skills\owasp-security-advisor`. If your shell does not
+`%USERPROFILE%\.claude\skills\owasp-advisor`. If your shell does not
 expand `~`, write the path out in full rather than guessing.
 
 The skill registers on next start. **It will not appear in a session that was
@@ -57,7 +62,7 @@ you are reading this in, tell the user to restart, and do not report the skill
 as installed until it is listed.
 
 To install for a single project instead of your user account, clone to
-`<target-repo>/.claude/skills/owasp-security-advisor` and commit it, or add it
+`<target-repo>/.claude/skills/owasp-advisor` and commit it, or add it
 as a submodule. Project-level skills only load for that project. Prefer
 user-level unless the user wants the skill pinned and versioned with the repo.
 
@@ -97,15 +102,35 @@ review that silently is not this protocol.
    and a `doctrine/` directory with the files listed in section 8 of
    `SKILL.md`. Slot 16 is intentionally absent; that is not a failed clone.
 2. **The skill is registered** (Claude Code). After a restart,
-   `owasp-security-advisor` appears in the available skills list.
-3. **The helpers run** (if Node is present):
+   `owasp-advisor` appears in the available skills list.
+3. **The helpers run** (if Node is present). From the skill's own directory:
 
    ```
-   node ~/.claude/skills/owasp-security-advisor/bin/render-report.js --help
+   node bin/render-report.js --help
    ```
 
-   It should print usage and exit 0.
-4. **You can state the seven hard rules** from section 2 of `SKILL.md` without
+   It should print usage and exit 0. Do not hardcode an install path here: run
+   it relative to wherever the skill was cloned, because the directory name is
+   the user's choice.
+4. **The pipeline actually produces a report.** A shipped fixture lets you prove
+   this before you author a real one:
+
+   ```
+   node bin/render-report.js -i examples/summary.json --stdout
+   ```
+
+   It should print a graded Markdown report and exit 0. If it errors, the input
+   contract is not what you think it is: read `templates/summary.schema.json`
+   before writing your own `summary.json`.
+5. **The version reads cleanly** (if Node is present):
+
+   ```
+   node bin/version.js
+   ```
+
+   It prints the installed version and flags any inconsistency in the version
+   surface. `doctrine/01-update-protocol.md` uses it to check for updates later.
+6. **You can state the seven hard rules** from section 2 of `SKILL.md` without
    re-reading them. If you cannot, you have not read `SKILL.md`, you have
    skimmed it, and the rules are the entire point.
 
@@ -129,7 +154,7 @@ Before the first review of a given project:
 **Never write a real environment variable name, file path, hostname, secret
 class, or rotation window into any file under the skill's own directory.** The
 skill is generic and shared. The engagement's data is not. If you find yourself
-editing a file under `~/.claude/skills/owasp-security-advisor/` during a
+editing a file under `~/.claude/skills/owasp-advisor/` during a
 review, you have made a mistake: stop and move it to the findings root.
 
 ---
@@ -198,10 +223,11 @@ Ranked by how often agents break them.
 | Symptom | Cause | Do this |
 |---|---|---|
 | Skill not listed after cloning | Session started before the clone | Restart. Skills load at start |
-| Skill not listed after restart | Wrong path, or directory name mismatch | The directory must be `owasp-security-advisor` and must contain `SKILL.md` at its root |
+| Skill not listed after restart | Wrong path, or directory name mismatch | The directory must be `owasp-advisor` and must contain `SKILL.md` at its root |
 | `doctrine/16-*` missing | Nothing. Slot 16 is intentionally unused | Continue |
 | Helper exits non-zero | Node < 18 | Upgrade Node, or skip the helpers. They are optional |
-| An older `owasp-advisor` skill also present | A previous, differently-named install | They are different skills and will both list. Ask the user which they want; do not delete anything without asking |
+| An older `owasp-security-advisor` skill also present | A previous install under the old directory name | They will both list. This skill is `owasp-advisor`; the old one is `owasp-security-advisor`. Ask the user which they want; do not delete anything without asking |
+| `version.js --check` exits 2 saying no remote | Installed by download, not clone, or the remote is unset | Set the origin remote, or reinstall by clone. See `doctrine/01-update-protocol.md` |
 | Push to the repo blocked | Permissions | Rule 4. Stop and ask. Do not branch around it |
 
 ---

@@ -1,6 +1,7 @@
 ---
-name: owasp-security-advisor
-description: OWASP-aligned security review of a file, folder, or repository. Use when the user asks for a security review, security sweep, security audit, OWASP review, vulnerability scan, threat model, secure code review, or asks how secure their code is, or whether something is ready to deploy from a security perspective. Also provides a build mode for security-logged remediation work. Produces a deterministic scored report with a dashboard (HTML and Markdown), per-finding files, and a machine-readable summary. Read-only on application code in review mode; never edits source. Aligned to OWASP ASVS 5.0, Top 10 (2021), API Security Top 10 (2023), Proactive Controls v4, and the Cheat Sheet Series.
+name: owasp-advisor
+version: 1.1.0
+description: OWASP-aligned security review of a file, folder, or repository. Use when the user asks for a security review, security sweep, security audit, OWASP review, vulnerability scan, threat model, secure code review, or asks how secure their code is, or whether something is ready to deploy from a security perspective. Also provides a build mode for security-logged remediation work, and a self-update protocol for the skill itself. Produces a deterministic scored report with a dashboard (HTML and Markdown), per-finding files, and a machine-readable summary. Read-only on application code in review mode; never edits source. Aligned to OWASP ASVS 5.0, Top 10 (2025), API Security Top 10 (2023), Proactive Controls 2024, and the Cheat Sheet Series.
 license: MIT
 ---
 
@@ -277,8 +278,24 @@ valid without them; they save typing, they do not find bugs.
   reports.
 - `bin/deployment-report.js` produces the short go/no-go extract for a deploy
   decision.
+- `bin/version.js` prints the installed skill version and, with `--check`,
+  compares it against the version declared upstream. It powers the self-update
+  protocol in `doctrine/01-update-protocol.md`.
 
 Run any with `--help`.
+
+---
+
+## 7a. Updating the skill
+
+When the user asks to "update this skill", "check for an update", or similar,
+you are being asked to update the OWASP Security Advisor itself, not to review
+anything. This is the one time you may write inside the skill's own directory.
+
+Follow `doctrine/01-update-protocol.md` in full. In short: read the local
+version, compare it against upstream, show the user what changed, and only then
+pull. Never overwrite local changes without confirming, and never create a
+branch in the skill repo (Rule 4 applies here too).
 
 ---
 
@@ -286,10 +303,12 @@ Run any with `--help`.
 
 | File | Scope |
 |---|---|
+| `doctrine/00-currency-log.md` | Which OWASP standards the skill tracks, and their state |
+| `doctrine/01-update-protocol.md` | Self-update. How the skill checks its version and upgrades |
 | `doctrine/02-asvs-checklist.md` | ASVS 5.0 coverage backstop |
 | `doctrine/03-api-top10-checklist.md` | API Security Top 10 (2023) |
-| `doctrine/04-web-top10-checklist.md` | Top 10 (2021) |
-| `doctrine/05-proactive-controls.md` | Proactive Controls v4 |
+| `doctrine/04-web-top10-checklist.md` | Top 10 (2025) |
+| `doctrine/05-proactive-controls.md` | Proactive Controls 2024 |
 | `doctrine/06-investigation-playbook.md` | How to investigate. Procedure, not a map |
 | `doctrine/07-findings-template.md` | The shape of a finding |
 | `doctrine/08-secrets-and-config.md` | Blank per-project secret inventory |

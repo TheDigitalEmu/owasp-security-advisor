@@ -3,8 +3,10 @@
 **Doctrine ID:** `13-auth-and-session`
 **Mode:** review and build
 **Source standards:** ASVS 5.0 (authentication, session management,
-self-contained tokens, and authorization chapters), OWASP Top 10 2021 A01
-(Broken Access Control) and A07 (Identification and Authentication Failures),
+self-contained tokens, and authorization chapters), OWASP Top 10 2025 A01
+(Broken Access Control, which in 2025 also absorbs SSRF) and A07
+(Authentication Failures, renamed from the 2021 Identification and
+Authentication Failures),
 OWASP Authentication Cheat Sheet, Session Management Cheat Sheet,
 Authorization Cheat Sheet, JSON Web Token Cheat Sheet
 

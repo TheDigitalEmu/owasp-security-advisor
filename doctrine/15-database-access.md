@@ -3,7 +3,7 @@
 **Doctrine ID:** `15-database-access`
 **Mode:** review and build
 **Source standards:** ASVS 5.0 (encoding and sanitization, validation and
-business logic chapters), OWASP Top 10 2021 A03 (Injection), OWASP SQL Injection
+business logic chapters), OWASP Top 10 2025 A05 (Injection), OWASP SQL Injection
 Prevention Cheat Sheet, Query Parameterization Cheat Sheet, Injection Prevention
 Cheat Sheet
 

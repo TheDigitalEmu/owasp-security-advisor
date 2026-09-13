@@ -2,7 +2,7 @@
 
 **Doctrine ID:** `09-dependency-supply-chain`
 **Mode:** review and build
-**Source standards:** OWASP Top 10 2021 A06 (Vulnerable and Outdated Components) and A08 (Software and Data Integrity Failures), OWASP API Security Top 10 2023 API10 (Unsafe Consumption of APIs), OWASP Dependency-Check and CycloneDX project guidance, OWASP ASVS 5.0 configuration chapter, OWASP Software Component Verification Standard (SCVS)
+**Source standards:** OWASP Top 10 2025 A03 (Software Supply Chain Failures, which in 2025 absorbs and expands the 2021 A06 Vulnerable and Outdated Components) and A08 (Software or Data Integrity Failures), OWASP API Security Top 10 2023 API10 (Unsafe Consumption of APIs), OWASP Dependency-Check and CycloneDX project guidance, OWASP ASVS 5.0 configuration chapter, OWASP Software Component Verification Standard (SCVS)
 
 ---
 

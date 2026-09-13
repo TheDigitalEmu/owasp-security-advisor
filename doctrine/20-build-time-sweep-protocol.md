@@ -2,7 +2,7 @@
 
 **Doctrine ID:** `20-build-time-sweep-protocol`
 **Mode:** build only
-**Source standards:** OWASP Proactive Controls v4, ASVS 5.0 chapter 1
+**Source standards:** OWASP Proactive Controls 2024, ASVS 5.0 chapter 1
 (architecture, design, threat modelling), OWASP Code Review Guide
 
 ---

@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "1.0.0",
+  "engagement": {
+    "target": "<target-repo>",
+    "reviewedAt": "2026-01-01T00:00:00Z",
+    "reviewer": "example, not a real review",
+    "commit": "0000000000000000000000000000000000000000",
+    "mode": "review",
+    "scope": {
+      "included": ["src/"],
+      "excluded": ["vendor/", "generated/"]
+    },
+    "asvsLevel": "L2"
+  },
+  "coverage": {
+    "entryPointsEnumerated": 10,
+    "entryPointsTraced": 8,
+    "doctrinePassesApplicable": ["13", "15", "04", "03", "02"],
+    "doctrinePassesCompleted": ["13", "15", "04", "03", "02"],
+    "areasNotReviewed": ["the payment webhook handler, no test environment available"]
+  },
+  "findings": [
+    {
+      "id": "F-001",
+      "title": "Search handler concatenates a query parameter into SQL",
+      "severity": "Critical",
+      "verified": true,
+      "confidence": "high",
+      "impact": "Severe",
+      "reachability": "Open",
+      "status": "open",
+      "component": "<backend>/search",
+      "owasp": ["A05:2025 Injection"],
+      "asvs": ["V5.3"],
+      "cwe": ["CWE-89"],
+      "summary": "An unauthenticated request reaches a concatenated SQL string with no binding.",
+      "file": "findings/CRITICAL-001-sql-injection-search.md",
+      "location": {
+        "entryPoint": "<entry-point>:GET /search",
+        "sink": "<backend>/db/query.js: raw concatenation",
+        "control": "none found on the path"
+      }
+    },
+    {
+      "id": "F-002",
+      "title": "Password reset token does not expire",
+      "severity": "Medium",
+      "verified": true,
+      "confidence": "high",
+      "impact": "Moderate",
+      "reachability": "Authenticated",
+      "status": "open",
+      "component": "<backend>/auth/reset",
+      "owasp": ["A07:2025 Authentication Failures"],
+      "asvs": ["V2.5"],
+      "cwe": ["CWE-640"],
+      "summary": "A reset token remains valid indefinitely once issued.",
+      "file": "findings/MEDIUM-002-reset-token-no-expiry.md",
+      "location": {
+        "entryPoint": "<entry-point>:POST /auth/reset",
+        "sink": "<backend>/auth/reset.js: token lookup with no expiry check",
+        "control": "single-use flag present, expiry absent"
+      }
+    }
+  ]
+}

@@ -2,7 +2,7 @@
 
 **Doctrine ID:** `10-logging-monitoring`
 **Mode:** review and build
-**Source standards:** OWASP Top 10 2021 A09 (Security Logging and Monitoring Failures), OWASP ASVS 5.0 logging and error handling chapter, OWASP Logging Cheat Sheet, OWASP Logging Vocabulary Cheat Sheet
+**Source standards:** OWASP Top 10 2025 A09 (Security Logging and Alerting Failures, renamed from the 2021 Security Logging and Monitoring Failures), OWASP ASVS 5.0 logging and error handling chapter, OWASP Logging Cheat Sheet, OWASP Logging Vocabulary Cheat Sheet
 
 ---
 
