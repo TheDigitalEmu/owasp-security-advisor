@@ -4,6 +4,26 @@ All notable changes to this project are documented here.
 
 Format based on Keep a Changelog. This project adheres to Semantic Versioning.
 
+## [1.4.1] - 2026-09-14
+
+### Fixed
+
+- `SYSTEM_PROMPT.md` still described the old two-mode model ("if unsure, review",
+  and "sweep" grouped with fix/harden as build). This contradicted the
+  three-mode SKILL.md, so a non-Claude agent pasting it got the wrong behaviour.
+  Rewritten to the three modes (Review, Sweep, Build) with the same word-picks-mode
+  and no-silent-guess rules, and the tool-layer read-only note now names Review
+  and Sweep.
+- `bin/render-report.js` now surfaces the enumeration `entrySource`. When the
+  attack-surface denominator was best-effort (no framework profile matched, e.g.
+  a Python or shell tree), the report says so, so coverage is not read as
+  mechanically anchored when it was guessed by file name.
+- Section 9 states plainly that a report from this protocol is not an independent
+  security sign-off (a read is not an attack; in Build the author and reviewer
+  are one model), and says to hand that caveat back with the grade.
+- `BOOTSTRAP.md` points non-Claude agents to the plain-clone path up front.
+- GitHub repository description set (was a stub).
+
 ## [1.4.0] - 2026-09-13
 
 ### Fixed

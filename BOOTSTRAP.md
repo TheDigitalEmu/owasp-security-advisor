@@ -38,6 +38,10 @@ a host is not this skill's job, and is not something you should improvise.
 
 ## 2. Install
 
+Not running Claude Code? Skip to 2.2. The `~/.claude/skills/` path in 2.1 is
+Claude-specific and does nothing in another agent; for everything else the kit is
+a plain git clone plus `SYSTEM_PROMPT.md`.
+
 ### 2.1 Claude Code
 
 User-level skills are read from `~/.claude/skills/<skill-name>/`. Clone there:

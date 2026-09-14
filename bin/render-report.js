@@ -32,7 +32,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const VERSION = '1.4.0';
+const VERSION = '1.4.1';
 
 /* ---------------------------------------------------------------- scoring -
  * rubrics/scoring.md section 1.
@@ -416,7 +416,22 @@ function main() {
 
   const eng = data.engagement || {};
   const unverifiedCount = findings.filter((f) => f.verified !== true).length;
-  const warning = coverageWarning(pct, s.grade, cov, coverageSelfAuthored);
+  // If the enumeration denominator was best-effort (no framework profile
+  // matched), the coverage figure is only as honest as the reviewer for the
+  // classes the enumerator could not find. Say so, per Bob's point and
+  // doctrine/06. entrySource is set by bin/enumerate.js.
+  const entrySource = data.enumeration && data.enumeration.entrySource;
+  let enumProfileWarning = '';
+  if (entrySource && !/^mechanical/i.test(entrySource)) {
+    enumProfileWarning =
+      'The attack-surface denominator was best-effort: no framework profile ' +
+      'matched, so entry points were guessed by file name. Entry-point coverage ' +
+      'here is only as complete as the reviewer, not mechanically anchored. ' +
+      'Treat the coverage figure for entry points with that caveat.';
+  }
+
+  const coverageMsg = coverageWarning(pct, s.grade, cov, coverageSelfAuthored);
+  const warning = [coverageMsg, enumProfileWarning].filter(Boolean).join(' ');
 
   const sorted = [...findings].sort(
     (a, b) => SEV_RANK[b.severity] - SEV_RANK[a.severity]

@@ -31,7 +31,7 @@
 import { readdirSync, statSync, readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join, resolve, relative, basename } from 'node:path';
 
-const VERSION = '1.4.0';
+const VERSION = '1.4.1';
 
 const HELP = `
 enumerate.js -- derive the attack-surface denominator from the code

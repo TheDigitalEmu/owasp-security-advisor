@@ -1,6 +1,6 @@
 ---
 name: owasp-advisor
-version: 1.4.0
+version: 1.4.1
 description: OWASP-aligned security review, sweep, or build for a file, folder, or repository. Three modes. Review (read-only) produces one management-facing scored report document. Sweep (read-only) produces the full in-depth report with a dashboard, per-finding files, and supporting documents in its own dated folder. Build writes code, remediating a sweep's findings one logged commit at a time; it is also triggered by fix, harden, remediate, or patch. On a bare call the skill asks which mode; a mode word or clear intent in the request selects it directly. Also provides a self-update protocol for the skill itself. Aligned to OWASP ASVS 5.0, Top 10 (2025), API Security Top 10 (2023), Proactive Controls 2024, and the Cheat Sheet Series.
 license: MIT
 ---
@@ -446,6 +446,12 @@ Slot 16 is intentionally unused.
 - Not a pentest. No exploitation, no live testing, no traffic at any host.
 - Not a compliance certification. ASVS alignment is not an ASVS certification.
 - Not a substitute for a human reviewer on anything that matters.
+- **Not an independent security sign-off.** A read of the code, however careful,
+  is not an attack, and in Build mode the author and the reviewer are the same
+  model, which is not a second set of eyes. Independence needs a human or a
+  different tool. Say this louder than the grade: a scored report from this
+  protocol is evidence for a human decision, not the decision.
 
 Say this to the user if they seem to expect otherwise. Overclaiming what a
-read-only review proves is its own kind of security failure.
+read-only review proves is its own kind of security failure. When you hand back a
+grade, hand back this caveat with it.
