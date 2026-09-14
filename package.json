@@ -1,6 +1,6 @@
 {
   "name": "owasp-advisor",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "OWASP-aligned security review protocol for AI coding agents and human reviewers. Produces a deterministic scored report. Read-only on application code in review mode. Aligned to ASVS 5.0, Top 10 (2025), API Security Top 10 (2023), and Proactive Controls 2024.",
   "license": "MIT",
   "author": "Digital Emu",
@@ -30,14 +30,16 @@
     "owasp-render-report": "bin/render-report.js",
     "owasp-deployment-report": "bin/deployment-report.js",
     "owasp-version": "bin/version.js",
-    "owasp-enumerate": "bin/enumerate.js"
+    "owasp-enumerate": "bin/enumerate.js",
+    "owasp-consensus": "bin/consensus.js"
   },
   "scripts": {
     "reachability": "node bin/reachability.js",
     "render": "node bin/render-report.js",
     "deployment": "node bin/deployment-report.js",
     "version-check": "node bin/version.js --check",
-    "enumerate": "node bin/enumerate.js"
+    "enumerate": "node bin/enumerate.js",
+    "consensus": "node bin/consensus.js"
   },
   "files": [
     "SKILL.md",

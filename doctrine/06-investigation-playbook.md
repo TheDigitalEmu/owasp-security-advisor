@@ -201,6 +201,35 @@ If `enumerate.js` reports it could not profile the framework, its entry-point
 list is best-effort: say so in the report, because coverage for the parts it
 could not enumerate is only as honest as you are.
 
+### Multi-pass sampling, to stop the finding set drifting
+
+Even with a fixed denominator, two runs can land different verdicts on the same
+element: one traces a path to a finding, another calls it clear. To reduce that,
+Sweep runs the verdict pass N times (default 3) over the **same**
+`enumeration.json`, and `bin/consensus.js` combines them.
+
+The passes must be genuinely independent re-traversals. Copying pass one into
+pass two defeats the entire mechanism and is a Rule 2 violation: the value is in
+the disagreement it surfaces. Record each pass as its own sample file
+(`{pass, sampler, elements:[{id, verdict, evidence, finding}]}`), then:
+
+```
+node bin/consensus.js --enumeration enumeration.json --samples p1.json p2.json p3.json --out summary.json
+```
+
+Consensus combines by rule: any pass says finding means finding (a real defect
+one pass found is a miss by the others), any remaining gap means gap, else clear.
+For a finding's rating it takes the highest cited impact and reachability and the
+most cautious verified and confidence, so an unverified guess in one pass cannot
+ride to a high severity. It writes a `disagreementRate` and a per-finding
+`ratingDivergence`.
+
+The honest limit, which the report states: `disagreementRate` is a stability
+measure, not completeness or correctness. N passes by one model share the same
+blind spots, agree with each other, and can be identically wrong. Only different
+models or a human on the passes make agreement mean more than consistency.
+Review mode runs a single pass by default; Sweep runs three.
+
 ---
 
 ## Search technique

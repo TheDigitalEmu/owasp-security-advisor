@@ -32,7 +32,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const VERSION = '1.4.1';
+const VERSION = '1.5.0';
 
 /* ---------------------------------------------------------------- scoring -
  * rubrics/scoring.md section 1.
@@ -430,8 +430,24 @@ function main() {
       'Treat the coverage figure for entry points with that caveat.';
   }
 
+  // Consensus stability, when bin/consensus.js merged N passes. This is a
+  // STABILITY measure, never completeness or correctness: passes by one model
+  // sharing a blind spot agree with each other and are still wrong.
+  let consensusMsg = '';
+  if (data.consensus && typeof data.consensus.disagreementRate === 'number') {
+    const c = data.consensus;
+    const pctAgree = Math.round((1 - c.disagreementRate) * 100);
+    const multi = Array.isArray(c.samplers) && c.samplers.length > 1;
+    consensusMsg =
+      `Consensus of ${c.passes} passes: the passes agreed on ${pctAgree}% of ` +
+      'elements. This is how stable the review is, not how correct or complete. ' +
+      (multi
+        ? 'Passes came from more than one sampler, so agreement carries some weight.'
+        : 'All passes came from one sampler, so agreement means the review was consistent, not that it was right or complete.');
+  }
+
   const coverageMsg = coverageWarning(pct, s.grade, cov, coverageSelfAuthored);
-  const warning = [coverageMsg, enumProfileWarning].filter(Boolean).join(' ');
+  const warning = [coverageMsg, enumProfileWarning, consensusMsg].filter(Boolean).join(' ');
 
   const sorted = [...findings].sort(
     (a, b) => SEV_RANK[b.severity] - SEV_RANK[a.severity]

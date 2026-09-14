@@ -202,6 +202,25 @@ The reason is not bureaucracy. A self-review written before the commit changes
 the commit. A self-review written after it is a justification, and it will
 justify whatever you already did.
 
+### The honest limit, and what to do about it
+
+In build mode the author and the reviewer are the same model. A self-review is
+you grading your own homework, and no procedure fully removes that. Two things
+reduce it, and both are required:
+
+1. **An adversarial second pass on the diff.** After the constructive
+   self-review, re-read the diff alone with the opposite framing: you are an
+   attacker who wants this commit to ship a bug. Find the one it ships. Record it
+   as its own entry, separate from the self-review, so the two are not blurred.
+   Different framing catches what the author's framing does not.
+
+2. **A sign-off field the close cannot skip.** Each item carries
+   `signOff: { by, role, at }` where `role` is `human` or `second-model`. Until a
+   human or a genuinely different model fills it, the item is
+   "remediated, self-reviewed, NOT independently signed off." The tool cannot
+   provide independence, but it must refuse to claim it. Do not report a sweep as
+   independently reviewed while any item's `signOff.role` is `author` or absent.
+
 ### Entry shape
 
 Append one of these to `04_changes.md` per commit, and stage it with the change:

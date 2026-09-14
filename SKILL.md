@@ -1,6 +1,6 @@
 ---
 name: owasp-advisor
-version: 1.4.1
+version: 1.5.0
 description: OWASP-aligned security review, sweep, or build for a file, folder, or repository. Three modes. Review (read-only) produces one management-facing scored report document. Sweep (read-only) produces the full in-depth report with a dashboard, per-finding files, and supporting documents in its own dated folder. Build writes code, remediating a sweep's findings one logged commit at a time; it is also triggered by fix, harden, remediate, or patch. On a bare call the skill asks which mode; a mode word or clear intent in the request selects it directly. Also provides a self-update protocol for the skill itself. Aligned to OWASP ASVS 5.0, Top 10 (2025), API Security Top 10 (2023), Proactive Controls 2024, and the Cheat Sheet Series.
 license: MIT
 ---
@@ -291,19 +291,35 @@ The rendered report is the deliverable. A review that ends in chat prose with no
 `report.html` and no score has not produced its output. Do these in order, all
 of them:
 
+0. Enumerate the attack surface first: `node bin/enumerate.js --root
+   <target-repo>`. It writes `enumeration.json`, the fixed denominator. Copy its
+   elements into `summary.json` under `enumeration` and give each a verdict as
+   you go. If it warns that no profile matched, enumerate entry points by hand
+   and say so in the report.
 1. Write each finding as a file using `doctrine/07-findings-template.md`.
 2. Write `<findings-root>/summary.json` to the shape in
    `templates/summary.schema.json`. Every finding gets `impact` and
    `reachability`; the schema lists the allowed values.
-3. Run the renderer. It computes the score and writes the reports:
+3. Preflight Node, then run the renderer. `node --version` first. If Node is
+   present, render:
 
    ```
    node bin/render-report.js -i <findings-root>/summary.json
    ```
 
-4. Confirm `report.html`, `report.md`, and a `score` block in `summary.json` now
-   exist. If they do not, stop and fix it before handing back. Do not describe a
-   score you did not render.
+   The renderer stamps `score.computedBy` in `summary.json`. That stamp is the
+   proof the grade was computed by the rubric, not by you.
+
+   **If Node is absent**, say so to the user in plain words, compute the grade by
+   hand from `rubrics/scoring.md`, and write `summary.json` with **no** `score`
+   block and a top-level `"renderStatus": "helpers-did-not-run: node absent"`.
+   Never present a hand-computed grade as a rendered one. A grade with no
+   `score.computedBy` is, by construction, an unrendered grade: label it
+   "hand-computed, unrendered, verify by running render-report.js".
+
+4. Confirm `report.html`, `report.md`, and a `score` block with `computedBy` in
+   `summary.json` now exist. If they do not and Node was available, stop and fix
+   it before handing back. Do not describe a score you did not render.
 
 If Node is genuinely unavailable, say so explicitly to the user, compute the
 grade by hand from `rubrics/scoring.md`, and still write `summary.json` so the
@@ -383,7 +399,13 @@ and `render-report.js` produces the report. `reachability.js` and
 - `bin/enumerate.js` derives the attack-surface denominator (entry points and
   sink classes) from the target's code, so coverage is measured against a fixed
   set the review did not invent. Run it before Step 5. Without it, coverage is
-  self-authored and a shallow review reports a false 100%.
+  self-authored and a shallow review reports a false 100%. It profiles next,
+  express, django, flask, rails, go, and php, and falls back to a best-effort
+  generic profile it declares loudly.
+- `bin/consensus.js` combines N independent review passes over the same
+  enumeration into one consensus, so the finding set and ratings stop drifting.
+  Sweep runs three passes by default. It reports a disagreement rate, which is a
+  stability measure, not completeness or correctness.
 - `bin/reachability.js` records a traced path from an entry point to a sink so
   a reviewer can check your Rule 2 work.
 - `bin/render-report.js` renders `summary.json` into the Markdown and HTML

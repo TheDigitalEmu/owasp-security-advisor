@@ -11,6 +11,22 @@
   ],
   "additionalProperties": false,
   "properties": {
+    "renderStatus": {
+      "type": "string",
+      "description": "Set when the helpers could not run, e.g. 'helpers-did-not-run: node absent'. A summary with no score.computedBy and this field is a hand-computed, unrendered result."
+    },
+    "consensus": {
+      "type": "object",
+      "description": "Present when bin/consensus.js merged N passes. disagreementRate is a stability measure only, never completeness or correctness.",
+      "additionalProperties": true,
+      "properties": {
+        "passes": { "type": "integer", "minimum": 1 },
+        "samplers": { "type": "array", "items": { "type": "string" } },
+        "disagreementRate": { "type": "number", "minimum": 0, "maximum": 1 },
+        "generatedBy": { "type": "string" },
+        "note": { "type": "string" }
+      }
+    },
     "schemaVersion": {
       "type": "string",
       "const": "1.0.0"
@@ -197,6 +213,25 @@
             "sink": { "type": "string" },
             "control": { "type": "string" }
           }
+        },
+        "ratingSamples": {
+          "type": "array",
+          "description": "Written by bin/consensus.js: the per-pass axis values that were combined into this finding.",
+          "items": {
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+              "impact": { "type": "string" },
+              "reachability": { "type": "string" },
+              "verified": { "type": "boolean" },
+              "confidence": { "type": "string" }
+            }
+          }
+        },
+        "ratingDivergence": {
+          "type": "object",
+          "description": "Written by bin/consensus.js: axes where the passes disagreed, each mapping to the distinct values seen. A non-empty object means the rating was not stable across passes.",
+          "additionalProperties": { "type": "array", "items": { "type": "string" } }
         }
       }
     }

@@ -4,6 +4,47 @@ All notable changes to this project are documented here.
 
 Format based on Keep a Changelog. This project adheres to Semantic Versioning.
 
+## [1.5.0] - 2026-09-14
+
+Closes the four known gaps left open in prior releases.
+
+### Added
+
+- **`bin/consensus.js`** reduces the run-to-run drift in the finding set and
+  ratings. It combines N independent review passes over the same fixed
+  enumeration: any pass finding an element means finding (union), a finding's
+  matrix axes take the highest cited level, and its verification axes take the
+  most cautious value. It records a per-finding `ratingDivergence` and a
+  document-level `disagreementRate`, which the report presents as a stability
+  measure, never as completeness or correctness. Sweep runs three passes by
+  default, Review one. Proven to converge the postcss/CSP Info-vs-Low flip to a
+  stable Info.
+
+### Changed
+
+- **`bin/enumerate.js`** now uses a declarative profile table covering next,
+  express, django, flask, rails, go, and php, with detection by file list as
+  well as package.json. When no profile matches it declares
+  `manualEnumerationRequired` loudly, and it warns when a matched profile finds
+  zero entry points (usually a broken rule, not a surfaceless app).
+- Node-absence is no longer silent. Step 5 preflights `node --version`; if Node
+  is missing, the summary carries `renderStatus` and no `score` block, and a
+  grade with no `score.computedBy` is labelled hand-computed and unrendered.
+- `bin/render-report.js` surfaces the consensus disagreement rate with its
+  stability-not-correctness caveat.
+- Build mode (`doctrine/20`) gains a mandatory adversarial second pass on the
+  diff and a `signOff` field whose role must be human or second-model. The tool
+  refuses to claim independent review while sign-off is by the author.
+- `summary.schema.json` gains `consensus`, `renderStatus`, per-finding
+  `ratingSamples`/`ratingDivergence` (additive, backward compatible).
+
+### Honest limit
+
+- Consensus reduces variance, not bias. N passes by one model share blind spots,
+  agree with each other, and can be identically wrong. Only heterogeneous
+  samplers (a different model, or a human) make agreement mean more than
+  consistency. The report says so.
+
 ## [1.4.1] - 2026-09-14
 
 ### Fixed

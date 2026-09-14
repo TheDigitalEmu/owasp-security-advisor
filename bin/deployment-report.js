@@ -26,7 +26,7 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-const VERSION = '1.4.1';
+const VERSION = '1.5.0';
 
 const SEV_RANK = { Critical: 4, High: 3, Medium: 2, Low: 1, Info: 0 };
 const SCORED_STATUS = new Set(['open', 'accepted-risk', 'wont-fix']);
